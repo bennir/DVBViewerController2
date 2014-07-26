@@ -1,0 +1,85 @@
+apply plugin: 'com.android.application'
+
+
+configurations {
+    patch
+}
+
+android {
+    compileSdkVersion 'android-L'
+    buildToolsVersion "20.0.0"
+
+    defaultConfig {
+        applicationId "de.bennir.dvbviewercontroller2"
+        minSdkVersion 'L'
+        targetSdkVersion 'L'
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+
+    patch 'com.squareup.okio:okio:1.0.0'
+    patch 'com.googlecode.jarjar:jarjar:1.3'
+    patch 'com.squareup.okhttp:okhttp:2.0.0'
+    patch 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
+    compile 'com.android.support:cardview-v7:21.+'
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.squareup.retrofit:retrofit:1.6.+'
+    compile 'com.android.support:support-v4:21.0.+'
+}
+
+project.ext.set("shouldBuildPatch",
+        {
+            !new File('lib/okhttp-urlconnection-2.0.0.patched.jar').exists(
+            )
+        })
+
+task downloadPatchLibs(type: Copy) {
+    into('lib')
+    from(configurations.patch)
+    exclude('jarjar*')
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+}
+downloadPatchLibs.doFirst {
+    if (!shouldBuildPatch()) {
+        throw new StopExecutionException
+                ()
+    }
+}
+
+task applyPatch(dependsOn: 'downloadPatchLibs') << {
+    if (shouldBuildPatch()) {
+        project.ant {
+            taskdef name: "jarjar", classname: "com.tonicsystems.jarjar.JarJarTask", classpath: configurations.patch.asPath
+            jarjar(jarfile: 'libs/okhttp-urlconnection-2.0.0.patched.jar', filesetmanifest: "merge") {
+                zipfileset(src: 'libs/okio-1.0.0.jar')
+                zipfileset(src: 'libs/okhttp-2.0.0.jar')
+                zipfileset(src: 'libs/okhttp-urlconnection-2.0.0.jar')
+                rule pattern: "okio.**", result: "custom.okio.@1"
+            }
+        }
+    }
+}
+
+task cleanupDownloadPatchLibs(type: Delete, dependsOn: 'applyPatch') {
+    delete 'lib/okio-1.0.0.jar'
+    delete 'lib/okhttp-2.0.0.jar'
+    delete 'lib/okhttp-urlconnection-2.0.0.jar'
+}
+
+assemble.dependsOn(cleanupDownloadPatchLibs)
+
+task cleanPatch(type: Delete) {
+    delete 'lib'
+}
+clean.dependsOn(cleanPatch)
