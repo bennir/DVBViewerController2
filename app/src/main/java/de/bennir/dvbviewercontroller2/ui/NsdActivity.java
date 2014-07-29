@@ -1,4 +1,4 @@
-package de.bennir.dvbviewercontroller2;
+package de.bennir.dvbviewercontroller2.ui;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -14,12 +14,13 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import de.bennir.dvbviewercontroller2.Config;
+import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.adapter.NsdAdapter;
 import de.bennir.dvbviewercontroller2.service.DVBService;
 
 public class NsdActivity extends ListActivity {
     public static final String TAG = NsdActivity.class.toString();
-    public static final String SERVICE_TYPE = "_dvbctrl._tcp.";
     NsdManager mNsdManager;
     NsdManager.ResolveListener mResolveListener;
     NsdManager.DiscoveryListener mDiscoveryListener;
@@ -183,7 +184,7 @@ public class NsdActivity extends ListActivity {
     public void discoverServices() {
         try {
             mNsdManager.discoverServices(
-                    SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
+                    Config.SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
         }

@@ -1,4 +1,4 @@
-package de.bennir.dvbviewercontroller2;
+package de.bennir.dvbviewercontroller2.ui;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import de.bennir.dvbviewercontroller2.R;
 
 public class ControllerActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -42,28 +44,36 @@ public class ControllerActivity extends Activity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+        Fragment fragment;
+
+        switch(position) {
+            case 0:
+                mTitle = getString(R.string.remote);
+                fragment = new RemoteFragment();
+                break;
+            case 1:
+                mTitle = getString(R.string.channels);
+                fragment = new ChannelFragment();
+                break;
+            case 2:
+                mTitle = getString(R.string.epg);
+                fragment = new RemoteFragment();
+                break;
+            case 3:
+                mTitle = getString(R.string.timers);
+                fragment = new RemoteFragment();
+                break;
+            default:
+                mTitle = getString(R.string.remote);
+                fragment = new RemoteFragment();
+                break;
+        }
+
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, fragment)
                 .commit();
-    }
-
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.remote);
-                break;
-            case 2:
-                mTitle = getString(R.string.channels);
-                break;
-            case 3:
-                mTitle = getString(R.string.epg);
-                break;
-            case 4:
-                mTitle = getString(R.string.timers);
-                break;
-        }
     }
 
     public void restoreActionBar() {
@@ -96,46 +106,6 @@ public class ControllerActivity extends Activity
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_controller, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((ControllerActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
     }
 
 }

@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:theme="@style/BaseAppTheme" >
         <activity
-            android:name=".NsdActivity"
+            android:name=".ui.NsdActivity"
             android:noHistory="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ControllerActivity"
+            android:name=".ui.ControllerActivity"
             android:label="@string/title_activity_controller" >
         </activity>
     </application>

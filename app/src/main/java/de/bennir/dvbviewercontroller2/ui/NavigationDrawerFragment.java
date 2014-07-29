@@ -1,4 +1,4 @@
-package de.bennir.dvbviewercontroller2;
+package de.bennir.dvbviewercontroller2.ui;
 
 
 import android.app.ActionBar;
@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.DVBMenuItem;
 
 /**
