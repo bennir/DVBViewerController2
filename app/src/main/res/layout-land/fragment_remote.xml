@@ -22,6 +22,7 @@
             android:layout_height="fill_parent"
             android:src="@drawable/remote_touchmap"
             android:contentDescription="@string/remote"
+            android:rotation="270"
             />
 
         <ImageView
@@ -33,6 +34,7 @@
             android:layout_height="fill_parent"
             android:src="@drawable/remote"
             android:contentDescription="@string/remote"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:rotation="270"/>
     </RelativeLayout>
 </LinearLayout>

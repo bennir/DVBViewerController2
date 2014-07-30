@@ -10,4 +10,6 @@ public class DVBService {
     public static final String DVBIP_KEY = "dvb_ip";
     public static final String DVBPORT_KEY = "dvb_port";
 
+    public void sendCommand(int up) {
+    }
 }

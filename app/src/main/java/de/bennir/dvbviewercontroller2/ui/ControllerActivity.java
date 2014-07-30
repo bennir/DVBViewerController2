@@ -37,9 +37,12 @@ public class ControllerActivity extends Activity
         mTitle = getTitle();
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if(mDrawerLayout != null) {
+            mNavigationDrawerFragment.setUp(
+                    R.id.navigation_drawer,
+                    mDrawerLayout);
+        }
     }
 
     @Override
