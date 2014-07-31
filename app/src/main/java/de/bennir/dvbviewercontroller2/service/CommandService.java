@@ -6,6 +6,6 @@ import retrofit.http.Body;
 import retrofit.http.POST;
 
 public interface CommandService {
-    @POST("/command")
+    @POST("/Command")
     void sendCommand(@Body DVBCommand command, Callback<DVBCommand> cb);
 }

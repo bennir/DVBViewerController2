@@ -44,7 +44,7 @@ public class NsdAdapter extends ArrayAdapter<NsdServiceInfo> {
         }
 
         holder.serviceName.setText(items.get(position).getServiceName());
-        holder.serviceHost.setText(items.get(position).getHost().toString());
+        holder.serviceHost.setText(items.get(position).getHost().getHostAddress());
         holder.servicePort.setText(String.valueOf(items.get(position).getPort()));
 
         return v;

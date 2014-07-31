@@ -1,14 +1,18 @@
 package de.bennir.dvbviewercontroller2;
 
-/**
- * Created by benni on 29.07.14.
- */
 public class Config {
     // DNS-SD Service Type
     public static final String SERVICE_TYPE = "_dvbctrl._tcp.";
 
-    public static String DVB_HOST = "example.com";
-    public static int DVB_PORT = 8000;
+    // Keys
+    public static final String DEMO_DEVICE = "demo_device";
+    public static final String DVBHOST_KEY = "dvb_host";
+    public static final String DVBIP_KEY = "dvb_ip";
+    public static final String DVBPORT_KEY = "dvb_port";
+
+    public static String DVB_HOST = "benni";
+    public static String DVB_IP = "192.168.2.2";
+    public static String DVB_PORT = "8000";
 
     // DVB Command Values
     public static int MENU      = 111;

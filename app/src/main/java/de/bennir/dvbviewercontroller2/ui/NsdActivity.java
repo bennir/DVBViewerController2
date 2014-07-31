@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.adapter.NsdAdapter;
-import de.bennir.dvbviewercontroller2.service.DVBService;
 
 public class NsdActivity extends ListActivity {
     public static final String TAG = NsdActivity.class.toString();
@@ -54,14 +53,14 @@ public class NsdActivity extends ListActivity {
 
                 break;
             case 1:
-                String title = DVBService.DEMO_DEVICE;
+                String title = Config.DEMO_DEVICE;
                 String server = "127.0.0.1";
                 String port = "8000";
 
                 Intent mIntent = new Intent(NsdActivity.this, ControllerActivity.class);
-                mIntent.putExtra(DVBService.DVBHOST_KEY, title);
-                mIntent.putExtra(DVBService.DVBIP_KEY, server);
-                mIntent.putExtra(DVBService.DVBPORT_KEY, port);
+                mIntent.putExtra(Config.DVBHOST_KEY, title);
+                mIntent.putExtra(Config.DVBIP_KEY, server);
+                mIntent.putExtra(Config.DVBPORT_KEY, port);
 
                 stopDiscovery();
                 startActivity(mIntent);
@@ -89,6 +88,16 @@ public class NsdActivity extends ListActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                NsdServiceInfo nsd = mAdapter.getItem(i);
+
+                Intent mIntent = new Intent(NsdActivity.this, ControllerActivity.class);
+                mIntent.putExtra(Config.DVBHOST_KEY, nsd.getServiceName());
+                mIntent.putExtra(Config.DVBIP_KEY, nsd.getHost().getHostAddress());
+                mIntent.putExtra(Config.DVBPORT_KEY, String.valueOf(nsd.getPort()));
+
+                stopDiscovery();
+                startActivity(mIntent);
+
             }
         });
     }

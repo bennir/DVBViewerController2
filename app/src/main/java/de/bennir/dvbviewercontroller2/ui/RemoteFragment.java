@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Vibrator;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,7 +16,9 @@ import android.widget.ImageView;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
+import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBCommand;
+import de.bennir.dvbviewercontroller2.service.ChannelService;
 import de.bennir.dvbviewercontroller2.service.CommandService;
 import de.bennir.dvbviewercontroller2.service.DVBService;
 import retrofit.Callback;
@@ -25,7 +29,7 @@ import retrofit.client.Response;
 public class RemoteFragment extends Fragment {
     private static final String TAG = RemoteFragment.class.toString();
     private Context mContext;
-    private DVBService mDVBService;
+    private DVBService mService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,6 +43,7 @@ public class RemoteFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mContext = getActivity().getApplicationContext();
+        mService = DVBService.getInstance(getActivity().getApplicationContext());
 
         ImageView remote = (ImageView) getActivity().findViewById(
                 R.id.remote);
@@ -128,25 +133,11 @@ public class RemoteFragment extends Fragment {
                     if (red == 0 && blue == 255 && green == 0) {
                         command = Config.BLUE;
                     }
+                    ((Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
 
                     DVBCommand cmd = new DVBCommand(command);
 
-                    RestAdapter restAdapter = new RestAdapter.Builder()
-                            .setEndpoint("http://" + Config.DVB_HOST + ":" + Config.DVB_PORT + "/api")
-                            .build();
-
-                    CommandService service = restAdapter.create(CommandService.class);
-                    service.sendCommand(cmd, new Callback<DVBCommand>() {
-                        @Override
-                        public void success(DVBCommand dvbCommand, Response response) {
-
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-
-                        }
-                    });
+                    mService.sendCommand(cmd);
                 }
 
                 return true;

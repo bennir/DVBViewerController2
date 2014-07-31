@@ -23,12 +23,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.DVBMenuItem;
+import de.bennir.dvbviewercontroller2.service.DVBService;
 
 public class ControllerActivity extends Activity {
     private static final String TAG = ControllerActivity.class.toString();
@@ -63,10 +64,20 @@ public class ControllerActivity extends Activity {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
+    private DVBService mService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controller);
+
+        Config.DVB_HOST = getIntent().getStringExtra(Config.DVBHOST_KEY);
+        Config.DVB_IP = getIntent().getStringExtra(Config.DVBIP_KEY);
+        Config.DVB_PORT = getIntent().getStringExtra(Config.DVBPORT_KEY);
+
+        mService = DVBService.getInstance(getApplicationContext());
+
+        Log.d(TAG, "Device " + Config.DVB_HOST + " (" + Config.DVB_IP + ":" + Config.DVB_PORT + ")");
 
         mContainer = (FrameLayout) findViewById(R.id.container);
 
@@ -303,14 +314,6 @@ public class ControllerActivity extends Activity {
                 return true;
             }
         }
-
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -329,6 +332,13 @@ public class ControllerActivity extends Activity {
             mCurrentSelectedPosition++;
             selectItem(mCurrentSelectedPosition);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        mService.destroy();
     }
 
     private class MenuAdapter extends ArrayAdapter<DVBMenuItem> {

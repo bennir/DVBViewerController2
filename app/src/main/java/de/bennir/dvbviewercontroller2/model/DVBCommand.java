@@ -1,9 +1,17 @@
 package de.bennir.dvbviewercontroller2.model;
 
 public class DVBCommand {
-    int command = 0;
+    public int getCommand() {
+        return Command;
+    }
+
+    public void setCommand(int command) {
+        Command = command;
+    }
+
+    private int Command = 0;
 
     public DVBCommand(int command) {
-        this.command = command;
+        setCommand(command);
     }
 }
