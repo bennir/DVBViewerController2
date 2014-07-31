@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -55,6 +57,7 @@ public class ControllerActivity extends Activity {
     public DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private FrameLayout mDrawer;
+    private FrameLayout mContainer;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
@@ -64,6 +67,8 @@ public class ControllerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controller);
+
+        mContainer = (FrameLayout) findViewById(R.id.container);
 
         MenuAdapter adapter = new MenuAdapter(getApplicationContext());
 
@@ -151,8 +156,20 @@ public class ControllerActivity extends Activity {
                 }
             });
         } else {
-            // Tablet Layout, 3 Panes
-            mTitle = getString(R.string.channels);
+            // Tablet Layout, 2 Columns
+            mTitle = getString(R.string.remote);
+            if(mContainer.getTag().equals("two_column")) {
+                adapter.add(new DVBMenuItem(getString(R.string.remote), R.drawable.ic_ab_up_white));
+            }
+
+
+            // Tablet Layout, 3 Columns
+            if(mContainer.getTag().equals("three_column")) {
+                mTitle = getString(R.string.channels);
+                adapter.add(new DVBMenuItem("three_column", R.drawable.ic_ab_up_white));
+
+                mCurrentSelectedPosition++;
+            }
 
             adapter.add(new DVBMenuItem(getString(R.string.channels), R.drawable.ic_ab_up_white));
             adapter.add(new DVBMenuItem(getString(R.string.epg), R.drawable.ic_ab_up_white));
@@ -188,9 +205,9 @@ public class ControllerActivity extends Activity {
 
         int pos = position;
         // Phone Layout with Navigation Drawer
-        if (mDrawerLayout == null) {
-            pos++;
-        }
+//        if (mDrawerLayout == null && mContainer.getTag().equals("three_column")) {
+//            pos++;
+//        }
 
         switch (pos) {
             case 0:
@@ -303,6 +320,17 @@ public class ControllerActivity extends Activity {
         outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
     }
 
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        Log.d(TAG, "Restore Instance State");
+        if(mContainer.getTag().equals("three_column") && savedInstanceState.getInt(STATE_SELECTED_POSITION) == 0) {
+            mCurrentSelectedPosition++;
+            selectItem(mCurrentSelectedPosition);
+        }
+    }
+
     private class MenuAdapter extends ArrayAdapter<DVBMenuItem> {
 
         public MenuAdapter(Context context) {
@@ -311,16 +339,21 @@ public class ControllerActivity extends Activity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
+            if(getItem(position).getTitle().equals("three_column")) {
                 convertView = LayoutInflater.from(getContext()).inflate(
-                        R.layout.list_item_menu, null);
+                        R.layout.list_item_null, null);
+            } else {
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(getContext()).inflate(
+                            R.layout.list_item_menu, null);
+                }
+
+                TextView title = (TextView) convertView.findViewById(R.id.menu_title);
+                ImageView icon = (ImageView) convertView.findViewById(R.id.menu_icon);
+
+                title.setText(getItem(position).getTitle());
+                icon.setImageDrawable(getResources().getDrawable(getItem(position).getIcon()));
             }
-
-            TextView title = (TextView) convertView.findViewById(R.id.menu_title);
-            ImageView icon = (ImageView) convertView.findViewById(R.id.menu_icon);
-
-            title.setText(getItem(position).getTitle());
-            icon.setImageDrawable(getResources().getDrawable(getItem(position).getIcon()));
 
             return convertView;
         }

@@ -12,9 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.DVBCommand;
+import de.bennir.dvbviewercontroller2.service.CommandService;
 import de.bennir.dvbviewercontroller2.service.DVBService;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class RemoteFragment extends Fragment {
     private static final String TAG = RemoteFragment.class.toString();
@@ -33,7 +39,6 @@ public class RemoteFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mContext = getActivity().getApplicationContext();
-//        mDVBService = DVBService.getInstance(mContext);
 
         ImageView remote = (ImageView) getActivity().findViewById(
                 R.id.remote);
@@ -77,50 +82,71 @@ public class RemoteFragment extends Fragment {
                      * Button Events
                      */
 
+                    int command = 0;
+
                     // Chan+
                     if (red == 119 && blue == 119 && green == 119) {
-                        mDVBService.sendCommand(DVBCommand.UP);
+                        command = Config.UP;
                     }
                     // Chan-
                     if (red == 0 && blue == 0 && green == 0) {
-                        mDVBService.sendCommand(DVBCommand.DOWN);
+                        command = Config.DOWN;
                     }
                     // Vol+
                     if (red == 49 && blue == 49 && green == 49) {
-                        mDVBService.sendCommand(DVBCommand.RIGHT);
+                        command = Config.RIGHT;
                     }
                     // Vol-
                     if (red == 204 && blue == 204 && green == 204) {
-                        mDVBService.sendCommand(DVBCommand.LEFT);
+                        command = Config.LEFT;
                     }
                     // Menu
                     if (red == 0 && blue == 255 && green == 255) {
-                        mDVBService.sendCommand(DVBCommand.MENU);
+                        command = Config.MENU;
                     }
                     // Ok
                     if (red == 255 && blue == 255 && green == 0) {
-                        mDVBService.sendCommand(DVBCommand.OK);
+                        command = Config.OK;
                     }
                     // Back
                     if (red == 255 && blue == 0 && green == 168) {
-                        mDVBService.sendCommand(DVBCommand.BACK);
+                        command = Config.BACK;
                     }
                     // Red
                     if (red == 255 && blue == 0 && green == 0) {
-                        mDVBService.sendCommand(DVBCommand.RED);
+                        command = Config.RED;
                     }
                     // Yellow
                     if (red == 255 && blue == 0 && green == 255) {
-                        mDVBService.sendCommand(DVBCommand.YELLOW);
+                        command = Config.YELLOW;
                     }
                     // Green
                     if (red == 0 && blue == 0 && green == 255) {
-                        mDVBService.sendCommand(DVBCommand.GREEN);
+                        command = Config.GREEN;
                     }
                     // Blue
                     if (red == 0 && blue == 255 && green == 0) {
-                        mDVBService.sendCommand(DVBCommand.BLUE);
+                        command = Config.BLUE;
                     }
+
+                    DVBCommand cmd = new DVBCommand(command);
+
+                    RestAdapter restAdapter = new RestAdapter.Builder()
+                            .setEndpoint("http://" + Config.DVB_HOST + ":" + Config.DVB_PORT + "/api")
+                            .build();
+
+                    CommandService service = restAdapter.create(CommandService.class);
+                    service.sendCommand(cmd, new Callback<DVBCommand>() {
+                        @Override
+                        public void success(DVBCommand dvbCommand, Response response) {
+
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+
+                        }
+                    });
                 }
 
                 return true;

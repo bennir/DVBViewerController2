@@ -8,4 +8,6 @@
     <color name="theme_default_accent_dark">#ff6f00</color>
 
     <color name="theme_background">#e2e2e2</color>
+    <color name="transparent">#00000000</color>
+    <color name="black">#ff000000</color>
 </resources>

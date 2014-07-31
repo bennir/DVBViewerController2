@@ -38,7 +38,8 @@
         <FrameLayout
             android:id="@+id/container"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+            android:layout_height="fill_parent"
+            android:tag="three_column" />
 
     </android.support.v7.widget.CardView>
 
