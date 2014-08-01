@@ -11,6 +11,7 @@ import java.util.List;
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBCommand;
+import de.bennir.dvbviewercontroller2.model.EpgInfo;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -27,8 +28,9 @@ public class DVBService {
     private CommandService commandService;
     private ChannelSuccessCallback mChannelCallback;
 
-    public HashMap<String, List<String>> channelGroupMap = new HashMap<String, List<String>>();
+    public HashMap<String, List<Channel>> channelMap = new HashMap<String, List<Channel>>();
     public List<Channel> channels = new ArrayList<Channel>();
+    public ArrayList<String> channelGroups = new ArrayList<String>();
 
     private DVBService(Context mContext) {
         Log.d(TAG, "DVBService()");
@@ -58,22 +60,23 @@ public class DVBService {
     }
 
     public void destroy() {
-        _instance.destroy();
         _instance = null;
     }
 
 
     public void sendCommand(DVBCommand cmd) {
-        commandService.sendCommand(cmd, new Callback<DVBCommand>() {
-            @Override
-            public void success(DVBCommand dvbCommand, Response response) {
-            }
+        if(!Config.DVB_HOST.equals("localhost")) {
+            commandService.sendCommand(cmd, new Callback<DVBCommand>() {
+                @Override
+                public void success(DVBCommand dvbCommand, Response response) {
+                }
 
-            @Override
-            public void failure(RetrofitError error) {
-                Log.e(TAG, error.toString());
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.e(TAG, error.toString());
+                }
+            });
+        }
     }
 
     public void getChannels() {
@@ -81,18 +84,113 @@ public class DVBService {
 
         channels.clear();
 
-        channelService.getChannels(new Callback<List<Channel>>() {
-            @Override
-            public void success(List<Channel> channels, Response response) {
-                DVBService.getInstance().channels = channels;
-                DVBService.getInstance().mChannelCallback.onChannelSuccess();
+        if(!Config.DVB_HOST.equals("localhost")) {
+            channelService.getChannels(new Callback<List<Channel>>() {
+                @Override
+                public void success(List<Channel> channels, Response response) {
+                    DVBService.getInstance().channels = channels;
+                    DVBService.getInstance().createChannelMap();
+
+                    DVBService.getInstance().mChannelCallback.onChannelSuccess();
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.e(TAG, error.toString());
+                }
+            });
+        } else {
+            createDemoChannels();
+
+            mChannelCallback.onChannelSuccess();
+        }
+    }
+
+    // TODO: JSON RAW File
+    private void createDemoChannels() {
+        Log.d(TAG, "createDemoChannels()");
+        Channel test = new Channel();
+        test.Name = "Das Erste HD";
+        test.Group = "ARD";
+        EpgInfo epg = new EpgInfo();
+        epg.ChannelName = test.Name;
+        epg.Desc = "Nachrichten";
+        epg.Time = "20:15";
+        epg.Title = "Nachrichten";
+        test.Epg = epg;
+
+        channels.add(test);
+
+        for (int i = 0; i < 10; i++) {
+            test = new Channel();
+            test.Name = "NDR HD " + i;
+            test.Group = "ARD";
+            epg = new EpgInfo();
+            epg.ChannelName = test.Name;
+            epg.Desc = "Nachrichten";
+            epg.Time = "20:15";
+            epg.Title = "Nachrichten";
+            test.Epg = epg;
+
+            channels.add(test);
+        }
+
+        test = new Channel();
+        test.Name = "ZDF HD";
+        test.Group = "ZDF";
+        epg = new EpgInfo();
+        epg.ChannelName = test.Name;
+        epg.Desc = "Nachrichten";
+        epg.Time = "20:15";
+        epg.Title = "Nachrichten";
+        test.Epg = epg;
+
+        channels.add(test);
+
+        for (int i = 0; i < 10; i++) {
+            test = new Channel();
+            test.Name = "ZDF Kultur";
+            test.Group = "ZDF";
+            epg = new EpgInfo();
+            epg.ChannelName = test.Name;
+            epg.Desc = "Nachrichten";
+            epg.Time = "20:15";
+            epg.Title = "Nachrichten";
+            test.Epg = epg;
+
+            channels.add(test);
+        }
+
+        createChannelMap();
+    }
+
+    private void createChannelMap() {
+        String currentGroup = "";
+        List<Channel> channelGroup = new ArrayList<Channel>();
+
+        for (Channel chan : channels) {
+            // Channel Group Names
+            if (!channelGroups.contains(chan.Group)) {
+                channelGroups.add(chan.Group);
             }
 
-            @Override
-            public void failure(RetrofitError error) {
-                Log.e(TAG, error.toString());
+            // Channel Map Group->List<Channel>
+            if (chan.Group.equals(currentGroup)) {
+                channelGroup.add(chan);
+            } else {
+                if (currentGroup.equals("")) {
+                    currentGroup = chan.Group;
+                    channelGroup.add(chan);
+                } else {
+                    channelMap.put(currentGroup, channelGroup);
+                    channelGroup.clear();
+
+                    currentGroup = chan.Group;
+                    channelGroup.add(chan);
+                }
             }
-        });
+        }
+        channelGroup.clear();
     }
 
     public void addChannelCallback(Fragment fragment) {

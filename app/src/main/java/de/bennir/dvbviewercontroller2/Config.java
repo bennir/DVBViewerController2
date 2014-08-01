@@ -5,14 +5,14 @@ public class Config {
     public static final String SERVICE_TYPE = "_dvbctrl._tcp.";
 
     // Keys
-    public static final String DEMO_DEVICE = "demo_device";
     public static final String DVBHOST_KEY = "dvb_host";
     public static final String DVBIP_KEY = "dvb_ip";
     public static final String DVBPORT_KEY = "dvb_port";
+    public static final String CHANNEL_KEY = "channel_name";
 
-    public static String DVB_HOST = "benni";
-    public static String DVB_IP = "192.168.2.2";
-    public static String DVB_PORT = "8000";
+    public static String DVB_HOST = "";
+    public static String DVB_IP = "";
+    public static String DVB_PORT = "";
 
     // DVB Command Values
     public static int MENU      = 111;

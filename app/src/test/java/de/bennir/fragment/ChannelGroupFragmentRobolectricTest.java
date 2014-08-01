@@ -10,18 +10,18 @@ import org.robolectric.annotation.Config;
 
 import de.bennir.FragmentTestCase;
 import de.bennir.dvbviewercontroller2.R;
-import de.bennir.dvbviewercontroller2.ui.ChannelFragment;
+import de.bennir.dvbviewercontroller2.ui.ChannelGroupFragment;
 
 import static org.junit.Assert.assertEquals;
 
 @Config(manifest = "./src/main/AndroidManifest.xml", emulateSdk = 18)
 @RunWith(RobolectricTestRunner.class)
-public class ChannelFragmentRobolectricTest extends FragmentTestCase<ChannelFragment> {
-    private ChannelFragment fragment;
+public class ChannelGroupFragmentRobolectricTest extends FragmentTestCase<ChannelGroupFragment> {
+    private ChannelGroupFragment fragment;
 
     @Before
     public void setUp() {
-        fragment = new ChannelFragment();
+        fragment = new ChannelGroupFragment();
     }
 
     @Test

@@ -53,14 +53,10 @@ public class NsdActivity extends ListActivity {
 
                 break;
             case 1:
-                String title = Config.DEMO_DEVICE;
-                String server = "127.0.0.1";
-                String port = "8000";
-
                 Intent mIntent = new Intent(NsdActivity.this, ControllerActivity.class);
-                mIntent.putExtra(Config.DVBHOST_KEY, title);
-                mIntent.putExtra(Config.DVBIP_KEY, server);
-                mIntent.putExtra(Config.DVBPORT_KEY, port);
+                mIntent.putExtra(Config.DVBHOST_KEY, "localhost");
+                mIntent.putExtra(Config.DVBIP_KEY, "127.0.0.1");
+                mIntent.putExtra(Config.DVBPORT_KEY, "8000");
 
                 stopDiscovery();
                 startActivity(mIntent);

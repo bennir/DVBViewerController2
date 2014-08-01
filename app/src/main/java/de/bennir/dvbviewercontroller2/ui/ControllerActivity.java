@@ -227,7 +227,7 @@ public class ControllerActivity extends Activity {
                 break;
             case 1:
                 mTitle = getString(R.string.channels);
-                fragment = new ChannelFragment();
+                fragment = new ChannelGroupFragment();
                 break;
             case 2:
                 mTitle = getString(R.string.epg);
