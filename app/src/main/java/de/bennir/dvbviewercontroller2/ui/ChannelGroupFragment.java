@@ -44,7 +44,9 @@ public class ChannelGroupFragment extends ProgressListFragment
         mService = DVBService.getInstance(getActivity().getApplicationContext());
         mService.addChannelCallback(this);
 
-        obtainData();
+        if(mService.channelGroups.isEmpty()) {
+            obtainData();
+        }
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -56,7 +58,12 @@ public class ChannelGroupFragment extends ProgressListFragment
                 fragment.setArguments(data);
 
                 FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction()
+                fragmentManager
+                        .beginTransaction()
+                        .setCustomAnimations(
+                                R.animator.card_flip_right_in, R.animator.card_flip_right_out,
+                                R.animator.card_flip_left_in, R.animator.card_flip_left_out
+                        )
                         .replace(R.id.container, fragment)
                         .addToBackStack(null)
                         .commit();
@@ -73,7 +80,7 @@ public class ChannelGroupFragment extends ProgressListFragment
 
     @Override
     public void onChannelSuccess() {
-        Log.d(TAG, "onChannelSuccess: " + mService.channels.size());
+//        Log.d(TAG, "onChannelSuccess: " + mService.channels.size());
 
         mAdapter = new ArrayAdapter<String>(mContext, R.layout.list_item_simple, mService.channelGroups);
         setListAdapter(mAdapter);

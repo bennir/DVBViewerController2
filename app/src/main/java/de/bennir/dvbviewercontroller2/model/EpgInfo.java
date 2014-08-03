@@ -6,4 +6,9 @@ public class EpgInfo {
     public String Title;
     public String Desc;
     public String Duration;
+
+    @Override
+    public String toString() {
+        return Time + ";" + ChannelName + ";" + Title + ";" + Desc + ";" + Duration + ";";
+    }
 }

@@ -65,10 +65,28 @@ public class DVBService {
 
 
     public void sendCommand(DVBCommand cmd) {
-        if(!Config.DVB_HOST.equals("localhost")) {
+        if (!Config.DVB_HOST.equals("localhost")) {
             commandService.sendCommand(cmd, new Callback<DVBCommand>() {
                 @Override
                 public void success(DVBCommand dvbCommand, Response response) {
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.e(TAG, error.toString());
+                }
+            });
+        }
+    }
+
+    public void setChannel(String channelId) {
+        if (!Config.DVB_HOST.equals("localhost")) {
+            Channel channel = new Channel();
+            channel.ChannelId = channelId;
+
+            channelService.setChannel(channel, new Callback<Channel>() {
+                @Override
+                public void success(Channel dvbCommand, Response response) {
                 }
 
                 @Override
@@ -84,7 +102,7 @@ public class DVBService {
 
         channels.clear();
 
-        if(!Config.DVB_HOST.equals("localhost")) {
+        if (!Config.DVB_HOST.equals("localhost")) {
             channelService.getChannels(new Callback<List<Channel>>() {
                 @Override
                 public void success(List<Channel> channels, Response response) {
@@ -149,7 +167,7 @@ public class DVBService {
 
         for (int i = 0; i < 10; i++) {
             test = new Channel();
-            test.Name = "ZDF Kultur";
+            test.Name = "ZDF Kultur " + i;
             test.Group = "ZDF";
             epg = new EpgInfo();
             epg.ChannelName = test.Name;
@@ -183,14 +201,14 @@ public class DVBService {
                     channelGroup.add(chan);
                 } else {
                     channelMap.put(currentGroup, channelGroup);
-                    channelGroup.clear();
+                    channelGroup = new ArrayList<Channel>();
 
                     currentGroup = chan.Group;
                     channelGroup.add(chan);
                 }
             }
         }
-        channelGroup.clear();
+        channelMap.put(currentGroup, channelGroup);
     }
 
     public void addChannelCallback(Fragment fragment) {

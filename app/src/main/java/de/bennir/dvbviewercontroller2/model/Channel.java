@@ -6,4 +6,9 @@ public class Channel {
     public String Group;
     public String ChannelId;
     public EpgInfo Epg;
+
+    @Override
+    public String toString() {
+        return Id+";"+Name+";"+Group+";"+ChannelId+";"+Epg+";";
+    }
 }

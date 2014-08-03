@@ -5,4 +5,7 @@
     android:layout_height="fill_parent"
     android:clipToPadding="false"
     android:scrollbarStyle="outsideOverlay"
+    android:padding="16dp"
+    android:dividerHeight="@dimen/dvblist_divider"
+    android:divider="#00000000"
     />

@@ -99,10 +99,10 @@ public class ControllerActivity extends Activity {
         if (mDrawerLayout != null) {
             mTitle = getString(R.string.remote);
 
-            adapter.add(new DVBMenuItem(getString(R.string.remote), R.drawable.ic_ab_up_white));
-            adapter.add(new DVBMenuItem(getString(R.string.channels), R.drawable.ic_ab_up_white));
-            adapter.add(new DVBMenuItem(getString(R.string.epg), R.drawable.ic_ab_up_white));
-            adapter.add(new DVBMenuItem(getString(R.string.timers), R.drawable.ic_ab_up_white));
+            adapter.add(new DVBMenuItem(getString(R.string.remote), R.drawable.ic_action_remote ));
+            adapter.add(new DVBMenuItem(getString(R.string.channels), R.drawable.ic_action_channels));
+            adapter.add(new DVBMenuItem(getString(R.string.epg), R.drawable.ic_action_epg));
+            adapter.add(new DVBMenuItem(getString(R.string.timers), R.drawable.ic_action_timers));
 
             mDrawerListView.setAdapter(adapter);
 

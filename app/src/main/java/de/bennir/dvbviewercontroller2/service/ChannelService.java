@@ -22,6 +22,6 @@ public interface ChannelService {
     @GET("/Channel/current/name")
     void getCurrentChannelName(Callback<String> cb);
 
-    @POST("/Channel/set")
-    void setChannel(@Body String channelId, Callback<String> cb);
+    @POST("/Channel")
+    void setChannel(@Body Channel channelId, Callback<Channel> cb);
 }
