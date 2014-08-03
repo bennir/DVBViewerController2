@@ -37,7 +37,7 @@ public class ControllerActivity extends Activity {
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
-    private CharSequence mTitle;
+    public CharSequence mTitle;
 
     /**
      * Remember the position of the selected item.

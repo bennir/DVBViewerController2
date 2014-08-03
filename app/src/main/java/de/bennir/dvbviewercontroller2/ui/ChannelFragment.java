@@ -3,6 +3,7 @@ package de.bennir.dvbviewercontroller2.ui;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +37,11 @@ public class ChannelFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
+
         currentChan = getArguments().getString(Config.CHANNEL_KEY);
+
+        ControllerActivity act = (ControllerActivity) getActivity();
+        act.mTitle = currentChan;
         getActivity().getActionBar().setTitle(currentChan);
     }
 }

@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import com.devspark.progressfragment.ProgressListFragment;
 
+import java.util.ResourceBundle;
+
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.service.DVBService;
@@ -56,6 +58,7 @@ public class ChannelGroupFragment extends ProgressListFragment
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, fragment)
+                        .addToBackStack(null)
                         .commit();
             }
         });
@@ -92,5 +95,16 @@ public class ChannelGroupFragment extends ProgressListFragment
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Log.d(TAG, "onResume()");
+        ControllerActivity act = (ControllerActivity) getActivity();
+        act.mTitle = getString(R.string.channels);
+
+
     }
 }
