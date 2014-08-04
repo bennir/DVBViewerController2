@@ -4,18 +4,14 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.devspark.progressfragment.ProgressListFragment;
-
-import java.util.ResourceBundle;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
@@ -44,7 +40,7 @@ public class ChannelGroupFragment extends ProgressListFragment
         mService = DVBService.getInstance(getActivity().getApplicationContext());
         mService.addChannelCallback(this);
 
-        if(mService.channelGroups.isEmpty()) {
+        if (mService.channelGroups.isEmpty()) {
             obtainData();
         }
 
@@ -80,8 +76,6 @@ public class ChannelGroupFragment extends ProgressListFragment
 
     @Override
     public void onChannelSuccess() {
-//        Log.d(TAG, "onChannelSuccess: " + mService.channels.size());
-
         mAdapter = new ArrayAdapter<String>(mContext, R.layout.list_item_simple, mService.channelGroups);
         setListAdapter(mAdapter);
 
@@ -108,10 +102,16 @@ public class ChannelGroupFragment extends ProgressListFragment
     public void onResume() {
         super.onResume();
 
-        Log.d(TAG, "onResume()");
         ControllerActivity act = (ControllerActivity) getActivity();
         act.mTitle = getString(R.string.channels);
 
+        mService.addChannelCallback(this);
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        mService.removeChannelCallback(this);
     }
 }

@@ -26,7 +26,8 @@ public class DVBService {
     private RestAdapter restAdapter;
     private ChannelService channelService;
     private CommandService commandService;
-    private ChannelSuccessCallback mChannelCallback;
+//    private ChannelSuccessCallback mChannelCallback;
+    private List<ChannelSuccessCallback> mChannelCallbacks = new ArrayList<ChannelSuccessCallback>();
 
     public HashMap<String, List<Channel>> channelMap = new HashMap<String, List<Channel>>();
     public List<Channel> channels = new ArrayList<Channel>();
@@ -50,8 +51,6 @@ public class DVBService {
     }
 
     public static DVBService getInstance(Context mContext) {
-        Log.d(TAG, "getInstance()");
-
         if (_instance == null) {
             _instance = new DVBService(mContext);
         }
@@ -107,9 +106,13 @@ public class DVBService {
                 @Override
                 public void success(List<Channel> channels, Response response) {
                     DVBService.getInstance().channels = channels;
-                    DVBService.getInstance().createChannelMap();
+                    createChannelMap();
 
-                    DVBService.getInstance().mChannelCallback.onChannelSuccess();
+                    for(ChannelSuccessCallback cb : mChannelCallbacks) {
+                        if(cb != null) {
+                            cb.onChannelSuccess();
+                        }
+                    }
                 }
 
                 @Override
@@ -120,7 +123,11 @@ public class DVBService {
         } else {
             createDemoChannels();
 
-            mChannelCallback.onChannelSuccess();
+            for(ChannelSuccessCallback cb : mChannelCallbacks) {
+                if(cb != null) {
+                    cb.onChannelSuccess();
+                }
+            }
         }
     }
 
@@ -213,7 +220,17 @@ public class DVBService {
 
     public void addChannelCallback(Fragment fragment) {
         try {
-            mChannelCallback = (ChannelSuccessCallback) fragment;
+            if(!mChannelCallbacks.contains((ChannelSuccessCallback) fragment)) {
+                mChannelCallbacks.add((ChannelSuccessCallback) fragment);
+            }
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Fragment must implement ChannelSuccessCallback.");
+        }
+    }
+
+    public void removeChannelCallback(Fragment fragment) {
+        try {
+            mChannelCallbacks.remove((ChannelSuccessCallback) fragment);
         } catch (ClassCastException e) {
             throw new ClassCastException("Fragment must implement ChannelSuccessCallback.");
         }

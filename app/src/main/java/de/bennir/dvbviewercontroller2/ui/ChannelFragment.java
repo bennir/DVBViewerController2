@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -22,7 +25,8 @@ import de.bennir.dvbviewercontroller2.adapter.ChannelAdapter;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.service.DVBService;
 
-public class ChannelFragment extends ListFragment {
+public class ChannelFragment extends ListFragment
+        implements DVBService.ChannelSuccessCallback {
     private static final String TAG = ChannelFragment.class.toString();
 
     private Context mContext;
@@ -31,6 +35,7 @@ public class ChannelFragment extends ListFragment {
     private ListView mListView;
     private View activeView;
     private ChannelAdapter mAdapter;
+    List<Channel> channels;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,10 +58,10 @@ public class ChannelFragment extends ListFragment {
         act.mTitle = currentChan;
         getActivity().getActionBar().setTitle(currentChan);
 
-        // Get all channels of current group
         mService = DVBService.getInstance(mContext);
+        mService.addChannelCallback(this);
 
-        List<Channel> channels = mService.channelMap.get(currentChan);
+        channels = mService.channelMap.get(currentChan);
 
         mAdapter = new ChannelAdapter(mContext, channels, mService);
         mListView.setAdapter(mAdapter);
@@ -122,5 +127,49 @@ public class ChannelFragment extends ListFragment {
             subMenu.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0));
             activeView = null;
         }
+    }
+
+    private void obtainData() {
+        mService.channelGroups.clear();
+
+        mService.getChannels();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.refresh, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_refresh:
+                obtainData();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onChannelSuccess() {
+        channels = mService.channelMap.get(currentChan);
+
+        mAdapter = new ChannelAdapter(mContext, channels, mService);
+        mListView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mService.addChannelCallback(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        mService.removeChannelCallback(this);
     }
 }
