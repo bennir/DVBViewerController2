@@ -26,7 +26,6 @@ public class DVBService {
     private RestAdapter restAdapter;
     private ChannelService channelService;
     private CommandService commandService;
-//    private ChannelSuccessCallback mChannelCallback;
     private List<ChannelSuccessCallback> mChannelCallbacks = new ArrayList<ChannelSuccessCallback>();
 
     public HashMap<String, List<Channel>> channelMap = new HashMap<String, List<Channel>>();

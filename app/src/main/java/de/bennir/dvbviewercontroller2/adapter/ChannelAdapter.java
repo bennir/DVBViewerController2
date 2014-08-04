@@ -122,8 +122,7 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-
-            Log.d(TAG, "Logo: " + url);
+            
             Picasso.with(mContext)
                     .load(url)
                     .into(viewHolder.logo);
