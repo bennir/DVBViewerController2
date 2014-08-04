@@ -2,6 +2,7 @@ package de.bennir.dvbviewercontroller2.ui;
 
 import android.app.ListFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -11,11 +12,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import java.util.List;
 
@@ -33,7 +31,6 @@ public class ChannelFragment extends ListFragment
     private DVBService mService;
     private String currentChan = "";
     private ListView mListView;
-    private View activeView;
     private ChannelAdapter mAdapter;
     List<Channel> channels;
 
@@ -69,32 +66,20 @@ public class ChannelFragment extends ListFragment
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                String channelId = ((TextView) view.findViewById(R.id.channel_item_favid)).getText().toString();
-                String channelId = String.valueOf(mAdapter.getItem(position).Id);
-                Log.d(TAG, "channelId: " + channelId);
-                setChannel(channelId);
+                Intent mIntent = new Intent(getActivity(), ChannelDetailActivity.class);
+                mIntent.putExtra(Config.CHANNEL_KEY, channels.get(position));
+
+                startActivity(mIntent);
             }
         });
 
         mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                showChannelMenu(view);
+                String channelId = String.valueOf(mAdapter.getItem(position).Id);
+                Log.d(TAG, "channelId: " + channelId);
+                setChannel(channelId);
                 return true;
-            }
-        });
-
-        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if (scrollState == SCROLL_STATE_TOUCH_SCROLL) {
-                    clearChannelMenu();
-                }
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
             }
         });
     }
@@ -104,28 +89,6 @@ public class ChannelFragment extends ListFragment
 
         if (!Config.DVB_HOST.equals("localhost")) {
             mService.setChannel(channelId);
-        }
-    }
-
-    private void showChannelMenu(View view) {
-        clearChannelMenu();
-        activeView = view;
-        LinearLayout subMenu = (LinearLayout) view.findViewById(R.id.channel_item_submenu);
-        subMenu.setVisibility(View.VISIBLE);
-
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.addRule(RelativeLayout.BELOW, R.id.channel_item_progress);
-        params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-
-        subMenu.setLayoutParams(params);
-    }
-
-    private void clearChannelMenu() {
-        if (activeView != null) {
-            LinearLayout subMenu = (LinearLayout) activeView.findViewById(R.id.channel_item_submenu);
-            subMenu.setVisibility(View.INVISIBLE);
-            subMenu.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0));
-            activeView = null;
         }
     }
 

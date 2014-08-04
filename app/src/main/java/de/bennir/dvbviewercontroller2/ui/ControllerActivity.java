@@ -14,6 +14,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
+import de.bennir.dvbviewercontroller2.model.DVBCommand;
 import de.bennir.dvbviewercontroller2.model.DVBMenuItem;
 import de.bennir.dvbviewercontroller2.service.DVBService;
 
@@ -76,6 +78,7 @@ public class ControllerActivity extends Activity {
         Config.DVB_PORT = getIntent().getStringExtra(Config.DVBPORT_KEY);
 
         mService = DVBService.getInstance(getApplicationContext());
+        mService.getChannels();
 
         Log.d(TAG, "Device " + Config.DVB_HOST + " (" + Config.DVB_IP + ":" + Config.DVB_PORT + ")");
 
@@ -264,6 +267,28 @@ public class ControllerActivity extends Activity {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(R.string.app_name);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            mService.sendCommand(new DVBCommand(Config.LEFT));
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            mService.sendCommand(new DVBCommand(Config.RIGHT));
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            return true;
+        }
+
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override

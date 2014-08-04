@@ -13,5 +13,7 @@
     <string name="timers">Timers</string>
     <string name="menu_refresh">Refresh</string>
     <string name="desc_channel_logo">Channel Logo</string>
+    <string name="title_activity_channel_detail">ChannelDetailActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

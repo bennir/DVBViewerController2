@@ -42,6 +42,11 @@ public class ChannelGroupFragment extends ProgressListFragment
 
         if (mService.channelGroups.isEmpty()) {
             obtainData();
+        } else {
+            mAdapter = new ArrayAdapter<String>(mContext, R.layout.list_item_simple, mService.channelGroups);
+            setListAdapter(mAdapter);
+
+            setListShown(true);
         }
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {

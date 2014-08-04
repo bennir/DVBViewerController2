@@ -87,7 +87,7 @@ public class RemoteFragment extends Fragment {
                      * Button Events
                      */
 
-                    int command = 0;
+                    int command = -1;
 
                     // Chan+
                     if (red == 119 && blue == 119 && green == 119) {
@@ -133,11 +133,14 @@ public class RemoteFragment extends Fragment {
                     if (red == 0 && blue == 255 && green == 0) {
                         command = Config.BLUE;
                     }
-                    ((Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
 
-                    DVBCommand cmd = new DVBCommand(command);
+                    if(command != -1) {
+                        ((Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
 
-                    mService.sendCommand(cmd);
+                        DVBCommand cmd = new DVBCommand(command);
+
+                        mService.sendCommand(cmd);
+                    }
                 }
 
                 return true;

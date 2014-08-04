@@ -68,39 +68,47 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
         }
 
         viewHolder.name.setText(channels.get(position).Name);
-        viewHolder.epg.setText(channels.get(position).Epg.Time + " - " + channels.get(position).Epg.Title);
+
+        if(channels.get(position).Epg != null) {
+            viewHolder.epg.setText(channels.get(position).Epg.Time + " - " + channels.get(position).Epg.Title);
+        }
         viewHolder.favid.setText(String.valueOf(channels.get(position).Id));
 
         /**
          * Duration Progress
          */
         if (!Config.DVB_HOST.equals("localhost")) {
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-            String curTime = format.format(new Date());
-            String startTime = channels.get(position).Epg.Time;
-            String duration = channels.get(position).Epg.Duration;
+            if(channels.get(position).Epg != null) {
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+                String curTime = format.format(new Date());
 
-            Date curDate;
-            Date startDate;
-            Date durDate = new Date();
-            long diff = 0;
+                String startTime = channels.get(position).Epg.Time;
+                String duration = channels.get(position).Epg.Duration;
 
-            if (!startTime.equals("")) {
-                try {
-                    curDate = format.parse(curTime);
-                    startDate = format.parse(startTime);
-                    durDate = format.parse(duration);
+                Date curDate;
+                Date startDate;
+                Date durDate = new Date();
+                long diff = 0;
 
-                    diff = curDate.getTime() - startDate.getTime();
-                } catch (ParseException ex) {
-                    ex.printStackTrace();
+                if (!startTime.equals("")) {
+                    try {
+                        curDate = format.parse(curTime);
+                        startDate = format.parse(startTime);
+                        durDate = format.parse(duration);
+
+                        diff = curDate.getTime() - startDate.getTime();
+                    } catch (ParseException ex) {
+                        ex.printStackTrace();
+                    }
                 }
+
+                double elapsed = (diff / 1000 / 60);
+                long durMinutes = (durDate.getHours() * 60 + durDate.getMinutes());
+
+                viewHolder.progress.setProgress(Double.valueOf((elapsed / durMinutes * 100)).intValue());
+            } else {
+                viewHolder.progress.setVisibility(View.GONE);
             }
-
-            double elapsed = (diff / 1000 / 60);
-            long durMinutes = (durDate.getHours() * 60 + durDate.getMinutes());
-
-            viewHolder.progress.setProgress(Double.valueOf((elapsed / durMinutes * 100)).intValue());
         } else {
             viewHolder.progress.setProgress(Double.valueOf(new Random().nextInt(100)).intValue());
         }
