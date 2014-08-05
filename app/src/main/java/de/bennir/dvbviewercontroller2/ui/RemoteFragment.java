@@ -29,7 +29,6 @@ import retrofit.client.Response;
 public class RemoteFragment extends Fragment {
     private static final String TAG = RemoteFragment.class.toString();
     private Context mContext;
-    private DVBService mService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,7 +42,6 @@ public class RemoteFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mContext = getActivity().getApplicationContext();
-        mService = DVBService.getInstance(getActivity().getApplicationContext());
 
         ImageView remote = (ImageView) getActivity().findViewById(
                 R.id.remote);
@@ -139,7 +137,7 @@ public class RemoteFragment extends Fragment {
 
                         DVBCommand cmd = new DVBCommand(command);
 
-                        mService.sendCommand(cmd);
+                        ((ControllerActivity) getActivity()).sendCommand(cmd);
                     }
                 }
 

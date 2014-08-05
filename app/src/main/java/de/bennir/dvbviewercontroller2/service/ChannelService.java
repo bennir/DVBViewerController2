@@ -1,6 +1,6 @@
 package de.bennir.dvbviewercontroller2.service;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import de.bennir.dvbviewercontroller2.model.Channel;
 import retrofit.Callback;
@@ -14,7 +14,7 @@ public interface ChannelService {
     void getCurrentChannel(Callback<Channel> cb);
 
     @GET("/Channel")
-    void getChannels(Callback<List<Channel>> cb);
+    void getChannels(Callback<ArrayList<Channel>> cb);
 
     @GET("/Channel/{id}")
     void getChannel(@Path("id") int id, Callback<Channel> cb);

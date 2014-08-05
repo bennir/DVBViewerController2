@@ -18,25 +18,35 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.adapter.ChannelAdapter;
 import de.bennir.dvbviewercontroller2.model.Channel;
-import de.bennir.dvbviewercontroller2.service.DVBService;
+import de.bennir.dvbviewercontroller2.service.ChannelService;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class ChannelFragment extends ListFragment
-        implements DVBService.ChannelSuccessCallback {
+        implements ControllerActivity.ChannelSuccessCallback {
     private static final String TAG = ChannelFragment.class.toString();
 
     private Context mContext;
-    private DVBService mService;
-    private Config mConfig;
     private String currentChan = "";
     private ListView mListView;
     private ChannelAdapter mAdapter;
-    List<Channel> channels;
+    private String Ip;
+    private String Port;
+    private String Host;
+
+    private ChannelService channelService;
+    private RestAdapter restAdapter;
+
+    private List<Channel> channels = new ArrayList<Channel>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,20 +62,29 @@ public class ChannelFragment extends ListFragment
         setHasOptionsMenu(true);
 
         mContext = getActivity().getApplicationContext();
-        mConfig = Config.getInstance(mContext);
+
         currentChan = getArguments().getString(Config.CHANNEL_KEY);
+        Host = getArguments().getString(Config.DVBHOST_KEY);
+        Ip = getArguments().getString(Config.DVBIP_KEY);
+        Port = getArguments().getString(Config.DVBPORT_KEY);
+
+        restAdapter = new RestAdapter.Builder()
+                .setEndpoint("http://" + Ip + ":" + Port + "/dvb")
+                .build();
+
+        channelService = restAdapter.create(ChannelService.class);
+
         mListView = getListView();
 
         ControllerActivity act = (ControllerActivity) getActivity();
         act.mTitle = currentChan;
         getActivity().getActionBar().setTitle(currentChan);
 
-        mService = DVBService.getInstance(mContext);
-        mService.addChannelCallback(this);
+        ((ControllerActivity) getActivity()).mChannelCallbacks.add(this);
 
-        channels = mService.channelMap.get(currentChan);
+        channels = ((ControllerActivity) getActivity()).channelMap.get(currentChan);
 
-        mAdapter = new ChannelAdapter(mContext, channels, mService);
+        mAdapter = new ChannelAdapter(mContext, channels);
         mListView.setAdapter(mAdapter);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -74,7 +93,7 @@ public class ChannelFragment extends ListFragment
                 Intent mIntent = new Intent(getActivity(), ChannelDetailActivity.class);
                 mIntent.putExtra(Config.CHANNEL_KEY, channels.get(position));
 
-                if(Build.VERSION.SDK_INT >= 21) {
+                if (Build.VERSION.SDK_INT >= 21) {
                     ImageView logo = (ImageView) parent.findViewById(R.id.channel_item_logo);
                     parent.setTransitionGroup(false);
 
@@ -102,15 +121,25 @@ public class ChannelFragment extends ListFragment
     void setChannel(String channelId) {
         ((Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
 
-        if (!mConfig.getHost().equals("localhost")) {
-            mService.setChannel(channelId);
+        if (!Host.equals("localhost")) {
+            Channel channel = new Channel();
+            channel.ChannelId = channelId;
+
+            channelService.setChannel(channel, new Callback<Channel>() {
+                @Override
+                public void success(Channel dvbCommand, Response response) {
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.e(TAG, error.toString());
+                }
+            });
         }
     }
 
     private void obtainData() {
-        mService.channelGroups.clear();
-
-        mService.getChannels();
+        ((ControllerActivity) getActivity()).getChannels();
     }
 
     @Override
@@ -131,9 +160,9 @@ public class ChannelFragment extends ListFragment
 
     @Override
     public void onChannelSuccess() {
-        channels = mService.channelMap.get(currentChan);
+        channels = ((ControllerActivity) getActivity()).channelMap.get(currentChan);
 
-        mAdapter = new ChannelAdapter(mContext, channels, mService);
+        mAdapter = new ChannelAdapter(mContext, channels);
         mListView.setAdapter(mAdapter);
     }
 
@@ -141,13 +170,13 @@ public class ChannelFragment extends ListFragment
     public void onResume() {
         super.onResume();
 
-        mService.addChannelCallback(this);
+        ((ControllerActivity) getActivity()).mChannelCallbacks.add(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        mService.removeChannelCallback(this);
+        ((ControllerActivity) getActivity()).mChannelCallbacks.remove(this);
     }
 }

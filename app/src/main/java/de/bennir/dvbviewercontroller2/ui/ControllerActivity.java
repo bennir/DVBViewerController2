@@ -27,11 +27,21 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
+import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBCommand;
 import de.bennir.dvbviewercontroller2.model.DVBMenuItem;
-import de.bennir.dvbviewercontroller2.service.DVBService;
+import de.bennir.dvbviewercontroller2.service.ChannelService;
+import de.bennir.dvbviewercontroller2.service.CommandService;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class ControllerActivity extends Activity {
     private static final String TAG = ControllerActivity.class.toString();
@@ -66,8 +76,21 @@ public class ControllerActivity extends Activity {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    private DVBService mService;
-    private Config mConfig;
+//    private DVBService mService;
+//    private Config mConfig;
+
+    public HashMap<String, List<Channel>> channelMap = new HashMap<String, List<Channel>>();
+    private ArrayList<Channel> mChannels = new ArrayList<Channel>();
+    private ArrayList<String> channelGroups = new ArrayList<String>();
+    private String Ip;
+    private String Port;
+    private String Host;
+
+    private ChannelService channelService;
+    private CommandService commandService;
+    private RestAdapter restAdapter;
+
+    public List<ChannelSuccessCallback> mChannelCallbacks = new ArrayList<ChannelSuccessCallback>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,16 +102,20 @@ public class ControllerActivity extends Activity {
             mFromSavedInstanceState = true;
         }
 
-        mConfig = Config.getInstance(getApplicationContext());
+        Host = getIntent().getStringExtra(Config.DVBHOST_KEY);
+        Ip = getIntent().getStringExtra(Config.DVBIP_KEY);
+        Port = getIntent().getStringExtra(Config.DVBPORT_KEY);
 
-        mConfig.setHost(getIntent().getStringExtra(Config.DVBHOST_KEY));
-        mConfig.setIp(getIntent().getStringExtra(Config.DVBIP_KEY));
-        mConfig.setPort(getIntent().getStringExtra(Config.DVBPORT_KEY));
+        restAdapter = new RestAdapter.Builder()
+                .setEndpoint("http://" + Ip + ":" + Port + "/dvb")
+                .build();
 
-        mService = DVBService.getInstance(getApplicationContext());
-        mService.getChannels();
+        commandService = restAdapter.create(CommandService.class);
+        channelService = restAdapter.create(ChannelService.class);
 
-        Log.d(TAG, "Device " + mConfig.getHost() + " (" + mConfig.getIp() + ":" + mConfig.getPort() + ")");
+        getChannels();
+
+        Log.d(TAG, "Device " + Host + " (" + Ip + ":" + Port + ")");
 
         mContainer = (FrameLayout) findViewById(R.id.container);
 
@@ -110,7 +137,7 @@ public class ControllerActivity extends Activity {
         if (mDrawerLayout != null) {
             mTitle = getString(R.string.remote);
 
-            adapter.add(new DVBMenuItem(getString(R.string.remote), R.drawable.ic_action_remote ));
+            adapter.add(new DVBMenuItem(getString(R.string.remote), R.drawable.ic_action_remote));
             adapter.add(new DVBMenuItem(getString(R.string.channels), R.drawable.ic_action_channels));
             adapter.add(new DVBMenuItem(getString(R.string.epg), R.drawable.ic_action_epg));
             adapter.add(new DVBMenuItem(getString(R.string.timers), R.drawable.ic_action_timers));
@@ -180,13 +207,13 @@ public class ControllerActivity extends Activity {
         } else {
             // Tablet Layout, 2 Columns
             mTitle = getString(R.string.remote);
-            if(mContainer.getTag().equals("two_column")) {
+            if (mContainer.getTag().equals("two_column")) {
                 adapter.add(new DVBMenuItem(getString(R.string.remote), R.drawable.ic_ab_up_white));
             }
 
 
             // Tablet Layout, 3 Columns
-            if(mContainer.getTag().equals("three_column")) {
+            if (mContainer.getTag().equals("three_column")) {
                 mTitle = getString(R.string.channels);
                 adapter.add(new DVBMenuItem("three_column", R.drawable.ic_ab_up_white));
 
@@ -221,10 +248,6 @@ public class ControllerActivity extends Activity {
         Fragment fragment;
 
         int pos = position;
-        // Phone Layout with Navigation Drawer
-//        if (mDrawerLayout == null && mContainer.getTag().equals("three_column")) {
-//            pos++;
-//        }
 
         switch (pos) {
             case 0:
@@ -234,6 +257,15 @@ public class ControllerActivity extends Activity {
             case 1:
                 mTitle = getString(R.string.channels);
                 fragment = new ChannelGroupFragment();
+
+                Bundle bundle = new Bundle();
+                bundle.putString(Config.DVBHOST_KEY, Host);
+                bundle.putString(Config.DVBPORT_KEY, Ip);
+                bundle.putString(Config.DVBIP_KEY, Port);
+                bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
+                bundle.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
+
+                fragment.setArguments(bundle);
                 break;
             case 2:
                 mTitle = getString(R.string.epg);
@@ -256,6 +288,81 @@ public class ControllerActivity extends Activity {
                 .commit();
     }
 
+    public void getChannels() {
+        Log.d(TAG, "getChannels()");
+
+        channelGroups.clear();
+        mChannels.clear();
+
+        if (!Host.equals("localhost")) {
+            channelService.getChannels(new Callback<ArrayList<Channel>>() {
+                @Override
+                public void success(ArrayList<Channel> channels, Response response) {
+                    mChannels = channels;
+                    createChannelMap();
+
+                    for (ChannelSuccessCallback cb : mChannelCallbacks) {
+                        if (cb != null) {
+                            cb.onChannelSuccess();
+                        }
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        } else {
+            mChannels = Config.createDemoChannels();
+            createChannelMap();
+        }
+    }
+
+    private void createChannelMap() {
+        String currentGroup = "";
+        List<Channel> channelGroup = new ArrayList<Channel>();
+
+        for (Channel chan : mChannels) {
+            // Channel Group Names
+            if (!channelGroups.contains(chan.Group)) {
+                channelGroups.add(chan.Group);
+            }
+
+            // Channel Map Group->List<Channel>
+            if (chan.Group.equals(currentGroup)) {
+                channelGroup.add(chan);
+            } else {
+                if (currentGroup.equals("")) {
+                    currentGroup = chan.Group;
+                    channelGroup.add(chan);
+                } else {
+                    channelMap.put(currentGroup, channelGroup);
+                    channelGroup = new ArrayList<Channel>();
+
+                    currentGroup = chan.Group;
+                    channelGroup.add(chan);
+                }
+            }
+        }
+        channelMap.put(currentGroup, channelGroup);
+    }
+
+    public void sendCommand(DVBCommand cmd) {
+        if (!Host.equals("localhost")) {
+            commandService.sendCommand(cmd, new Callback<DVBCommand>() {
+                @Override
+                public void success(DVBCommand dvbCommand, Response response) {
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.e(TAG, error.toString());
+                }
+            });
+        }
+    }
+
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
@@ -275,10 +382,10 @@ public class ControllerActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            mService.sendCommand(new DVBCommand(Config.LEFT));
+            sendCommand(new DVBCommand(Config.LEFT));
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            mService.sendCommand(new DVBCommand(Config.RIGHT));
+            sendCommand(new DVBCommand(Config.RIGHT));
             return true;
         }
 
@@ -356,17 +463,10 @@ public class ControllerActivity extends Activity {
         super.onRestoreInstanceState(savedInstanceState);
 
         Log.d(TAG, "Restore Instance State");
-        if(mContainer.getTag().equals("three_column") && savedInstanceState.getInt(STATE_SELECTED_POSITION) == 0) {
+        if (mContainer.getTag().equals("three_column") && savedInstanceState.getInt(STATE_SELECTED_POSITION) == 0) {
             mCurrentSelectedPosition++;
             selectItem(mCurrentSelectedPosition);
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        mService.destroy();
     }
 
     private class MenuAdapter extends ArrayAdapter<DVBMenuItem> {
@@ -377,7 +477,7 @@ public class ControllerActivity extends Activity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if(getItem(position).getTitle().equals("three_column")) {
+            if (getItem(position).getTitle().equals("three_column")) {
                 convertView = LayoutInflater.from(getContext()).inflate(
                         R.layout.list_item_null, null);
             } else {
@@ -398,4 +498,7 @@ public class ControllerActivity extends Activity {
 
     }
 
+    public static interface ChannelSuccessCallback {
+        void onChannelSuccess();
+    }
 }

@@ -105,34 +105,34 @@ public class DVBService {
 
         Log.d(TAG, mConfig.Host);
 
-        if (!mConfig.getHost().equals("localhost")) {
-            channelService.getChannels(new Callback<List<Channel>>() {
-                @Override
-                public void success(List<Channel> channels, Response response) {
-                    DVBService.getInstance().channels = channels;
-                    createChannelMap();
-
-                    for(ChannelSuccessCallback cb : mChannelCallbacks) {
-                        if(cb != null) {
-                            cb.onChannelSuccess();
-                        }
-                    }
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    Log.e(TAG, error.toString());
-                }
-            });
-        } else {
-            createDemoChannels();
-
-            for(ChannelSuccessCallback cb : mChannelCallbacks) {
-                if(cb != null) {
-                    cb.onChannelSuccess();
-                }
-            }
-        }
+//        if (!mConfig.getHost().equals("localhost")) {
+//            channelService.getChannels(new Callback<List<Channel>>() {
+//                @Override
+//                public void success(List<Channel> channels, Response response) {
+//                    DVBService.getInstance().channels = channels;
+//                    createChannelMap();
+//
+//                    for(ChannelSuccessCallback cb : mChannelCallbacks) {
+//                        if(cb != null) {
+//                            cb.onChannelSuccess();
+//                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void failure(RetrofitError error) {
+//                    Log.e(TAG, error.toString());
+//                }
+//            });
+//        } else {
+//            createDemoChannels();
+//
+//            for(ChannelSuccessCallback cb : mChannelCallbacks) {
+//                if(cb != null) {
+//                    cb.onChannelSuccess();
+//                }
+//            }
+//        }
     }
 
     // TODO: JSON RAW File

@@ -13,18 +13,24 @@ import android.widget.ArrayAdapter;
 
 import com.devspark.progressfragment.ProgressListFragment;
 
+import java.util.ArrayList;
+
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
-import de.bennir.dvbviewercontroller2.service.DVBService;
+import de.bennir.dvbviewercontroller2.model.Channel;
 
 public class ChannelGroupFragment extends ProgressListFragment
-        implements DVBService.ChannelSuccessCallback {
+        implements ControllerActivity.ChannelSuccessCallback {
     private static final String TAG = ChannelGroupFragment.class.toString();
 
     private ArrayAdapter<String> mAdapter;
     private Context mContext;
 
-    private DVBService mService;
+    private ArrayList<Channel> mChannels = new ArrayList<Channel>();
+    private ArrayList<String> channelGroups = new ArrayList<String>();
+    private String Ip;
+    private String Port;
+    private String Host;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,13 +43,20 @@ public class ChannelGroupFragment extends ProgressListFragment
         super.onActivityCreated(savedInstanceState);
 
         mContext = getActivity().getApplicationContext();
-        mService = DVBService.getInstance(getActivity().getApplicationContext());
-        mService.addChannelCallback(this);
 
-        if (mService.channelGroups.isEmpty()) {
+        Host = getArguments().getString(Config.DVBHOST_KEY);
+        Ip = getArguments().getString(Config.DVBIP_KEY);
+        Port = getArguments().getString(Config.DVBPORT_KEY);
+
+        mChannels = getArguments().getParcelableArrayList(Config.CHANNEL_LIST_KEY);
+        channelGroups = getArguments().getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
+
+        ((ControllerActivity) getActivity()).mChannelCallbacks.add(this);
+
+        if (channelGroups.isEmpty()) {
             obtainData();
         } else {
-            mAdapter = new ArrayAdapter<String>(mContext, R.layout.list_item_simple, mService.channelGroups);
+            mAdapter = new ArrayAdapter<String>(mContext, R.layout.list_item_simple, channelGroups);
             setListAdapter(mAdapter);
 
             setListShown(true);
@@ -54,9 +67,14 @@ public class ChannelGroupFragment extends ProgressListFragment
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Fragment fragment = new ChannelFragment();
 
-                Bundle data = new Bundle();
-                data.putString(Config.CHANNEL_KEY, mService.channelGroups.get(i));
-                fragment.setArguments(data);
+                Bundle bundle = new Bundle();
+                bundle.putString(Config.CHANNEL_KEY, channelGroups.get(i));
+                bundle.putString(Config.DVBHOST_KEY, Host);
+                bundle.putString(Config.DVBPORT_KEY, Ip);
+                bundle.putString(Config.DVBIP_KEY, Port);
+                bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
+                bundle.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
+                fragment.setArguments(bundle);
 
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager
@@ -74,14 +92,14 @@ public class ChannelGroupFragment extends ProgressListFragment
 
     private void obtainData() {
         setListShown(false);
-        mService.channelGroups.clear();
+        channelGroups.clear();
 
-        mService.getChannels();
+        ((ControllerActivity) getActivity()).getChannels();
     }
 
     @Override
     public void onChannelSuccess() {
-        mAdapter = new ArrayAdapter<String>(mContext, R.layout.list_item_simple, mService.channelGroups);
+        mAdapter = new ArrayAdapter<String>(mContext, R.layout.list_item_simple, channelGroups);
         setListAdapter(mAdapter);
 
         setListShown(true);
@@ -110,13 +128,13 @@ public class ChannelGroupFragment extends ProgressListFragment
         ControllerActivity act = (ControllerActivity) getActivity();
         act.mTitle = getString(R.string.channels);
 
-        mService.addChannelCallback(this);
+        ((ControllerActivity) getActivity()).mChannelCallbacks.add(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        mService.removeChannelCallback(this);
+        ((ControllerActivity) getActivity()).mChannelCallbacks.remove(this);
     }
 }

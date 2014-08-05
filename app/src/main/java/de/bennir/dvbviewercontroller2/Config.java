@@ -3,6 +3,12 @@ package de.bennir.dvbviewercontroller2;
 import android.content.Context;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.bennir.dvbviewercontroller2.model.Channel;
+import de.bennir.dvbviewercontroller2.model.EpgInfo;
+
 public class Config {
     private static final String TAG = Config.class.toString();
 
@@ -14,6 +20,8 @@ public class Config {
     public static final String DVBIP_KEY = "dvb_ip";
     public static final String DVBPORT_KEY = "dvb_port";
     public static final String CHANNEL_KEY = "channel_name";
+    public static final String CHANNEL_LIST_KEY = "channel_list";
+    public static final String CHANNEL_GROUP_LIST_KEY = "channel_group_list";
 
     // DVB Command Values
     public static int MENU      = 111;
@@ -29,6 +37,66 @@ public class Config {
     public static int YELLOW    = 76;
     public static int GREEN     = 75;
     public static int BLUE      = 77;
+
+    // TODO: JSON RAW File
+    public static ArrayList<Channel> createDemoChannels() {
+        Log.d(TAG, "createDemoChannels()");
+        ArrayList<Channel> channels = new ArrayList<Channel>();
+
+        Channel test = new Channel();
+        test.Name = "Das Erste HD";
+        test.Group = "ARD";
+        EpgInfo epg = new EpgInfo();
+        epg.ChannelName = test.Name;
+        epg.Desc = "Nachrichten";
+        epg.Time = "20:15";
+        epg.Title = "Nachrichten";
+        test.Epg = epg;
+
+        channels.add(test);
+
+        for (int i = 0; i < 10; i++) {
+            test = new Channel();
+            test.Name = "NDR HD " + i;
+            test.Group = "ARD";
+            epg = new EpgInfo();
+            epg.ChannelName = test.Name;
+            epg.Desc = "Nachrichten";
+            epg.Time = "20:15";
+            epg.Title = "Nachrichten";
+            test.Epg = epg;
+
+            channels.add(test);
+        }
+
+        test = new Channel();
+        test.Name = "ZDF HD";
+        test.Group = "ZDF";
+        epg = new EpgInfo();
+        epg.ChannelName = test.Name;
+        epg.Desc = "Nachrichten";
+        epg.Time = "20:15";
+        epg.Title = "Nachrichten";
+        test.Epg = epg;
+
+        channels.add(test);
+
+        for (int i = 0; i < 10; i++) {
+            test = new Channel();
+            test.Name = "ZDF Kultur " + i;
+            test.Group = "ZDF";
+            epg = new EpgInfo();
+            epg.ChannelName = test.Name;
+            epg.Desc = "Nachrichten";
+            epg.Time = "20:15";
+            epg.Title = "Nachrichten";
+            test.Epg = epg;
+
+            channels.add(test);
+        }
+
+        return channels;
+    }
 
     public String Host = "";
     private String Ip = "";

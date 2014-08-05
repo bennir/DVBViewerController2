@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.service.DVBService;
@@ -38,14 +37,13 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
 
     private List<Channel> channels;
     private Context mContext;
-    private DVBService mService;
-    private Config mConfig;
 
-    public ChannelAdapter(Context context, List<Channel> channels, DVBService service) {
+    public ChannelAdapter(Context context, List<Channel> channels) {
         super(context, R.layout.list_item_channel, channels);
         this.channels = channels;
         this.mContext = context;
-        this.mService = service;
+
+        //TODO: DVBServer Object -> Host, Ip, Port
         this.mConfig = Config.getInstance(context);
     }
 
