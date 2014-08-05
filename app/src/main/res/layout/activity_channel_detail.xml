@@ -2,15 +2,105 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="de.bennir.dvbviewercontroller2.ui.ChannelDetailActivity">
 
-    <TextView
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <ImageView
+        android:id="@+id/header_imageview"
+        android:viewName="header_image"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        />
+
+    <LinearLayout
+        android:id="@+id/header_information"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/header_imageview"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Das Erste"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Das Erste EPG"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20:15 - 23:00"/>
+
+        </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header_information">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:text="Das Erste"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:text="Das Erste"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:text="Das Erste"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:text="Das Erste"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:text="Das Erste"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:text="Das Erste"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:text="Das Erste"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:text="Das Erste"/>
+            <ListView
+                android:id="@android:id/list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="10dp"
+                android:background="@android:color/white"
+                />
+            </LinearLayout>
+
+
+        </FrameLayout>
 
 </RelativeLayout>

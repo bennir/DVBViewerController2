@@ -1,8 +1,10 @@
 package de.bennir.dvbviewercontroller2.ui;
 
+import android.app.ActivityOptions;
 import android.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import java.util.List;
@@ -69,7 +72,17 @@ public class ChannelFragment extends ListFragment
                 Intent mIntent = new Intent(getActivity(), ChannelDetailActivity.class);
                 mIntent.putExtra(Config.CHANNEL_KEY, channels.get(position));
 
-                startActivity(mIntent);
+                if(Build.VERSION.SDK_INT >= 21) {
+                    ImageView logo = (ImageView) parent.findViewById(R.id.channel_item_logo);
+                    parent.setTransitionGroup(false);
+
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(), logo, "header_image");
+
+                    startActivity(mIntent, options.toBundle());
+                } else {
+
+                    startActivity(mIntent);
+                }
             }
         });
 

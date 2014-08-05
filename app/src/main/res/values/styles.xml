@@ -18,8 +18,18 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
+    <style name="MainTheme.Overlay" parent="MainTheme">
+        <item name="android:actionBarStyle">@style/MainActionBar.Overlay</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="MainActionBar.Overlay" parent="MainActionBar">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
     <style name="MainActionBar" parent="android:Widget.Holo.Light.ActionBar">
-        <item name="android:background">?android:colorPrimaryDark</item>
+        <item name="android:background">@color/theme_default_primary</item>
         <item name="android:displayOptions">showTitle|homeAsUp</item>
         <item name="android:homeAsUpIndicator">@drawable/ic_ab_drawer</item>
         <item name="android:titleTextStyle">@style/MainThemeActionBarTitleTextStyle</item>

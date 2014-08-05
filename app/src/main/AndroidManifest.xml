@@ -15,6 +15,7 @@
         android:theme="@style/BaseAppTheme" >
         <activity
             android:name=".ui.NsdActivity"
+            android:theme="@style/MainTheme"
             android:noHistory="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,11 +25,14 @@
         </activity>
         <activity
             android:name=".ui.ControllerActivity"
-            android:label="@string/title_activity_controller" >
+            android:label="@string/title_activity_controller"
+            android:theme="@style/MainTheme" >
         </activity>
         <activity
             android:name=".ui.ChannelDetailActivity"
             android:label="@string/title_activity_channel_detail"
+            android:theme="@style/MainTheme.Overlay"
+
             android:parentActivityName=".ui.ControllerActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +27,18 @@ public class NsdActivity extends ListActivity {
     ArrayList<NsdServiceInfo> mItems = new ArrayList<NsdServiceInfo>();
     NsdAdapter mAdapter;
     ListView mListView;
+
+    Handler mHandler;
+    Runnable mStopDiscoveryRunnable = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                mNsdManager.stopServiceDiscovery(mDiscoveryListener);
+            } catch (IllegalArgumentException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
 
     @Override
@@ -60,6 +73,8 @@ public class NsdActivity extends ListActivity {
 
                 stopDiscovery();
                 startActivity(mIntent);
+
+                finish();
         }
 
         return false;
@@ -94,6 +109,7 @@ public class NsdActivity extends ListActivity {
                 stopDiscovery();
                 startActivity(mIntent);
 
+                finish();
             }
         });
     }
@@ -196,11 +212,8 @@ public class NsdActivity extends ListActivity {
     }
 
     public void stopDiscovery() {
-        try {
-            mNsdManager.stopServiceDiscovery(mDiscoveryListener);
-        } catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
-        }
+        mHandler = new Handler();
+        mHandler.post(mStopDiscoveryRunnable);
     }
 
     @Override

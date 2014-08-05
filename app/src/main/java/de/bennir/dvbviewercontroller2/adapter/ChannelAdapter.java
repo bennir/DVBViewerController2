@@ -126,6 +126,10 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
             Picasso.with(mContext)
                     .load(url)
                     .into(viewHolder.logo);
+        } else {
+            Picasso.with(mContext)
+                    .load(R.drawable.dvbviewer_controller)
+                    .into(viewHolder.logo);
         }
 
         return view;
