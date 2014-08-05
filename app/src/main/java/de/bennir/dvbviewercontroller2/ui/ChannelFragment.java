@@ -32,6 +32,7 @@ public class ChannelFragment extends ListFragment
 
     private Context mContext;
     private DVBService mService;
+    private Config mConfig;
     private String currentChan = "";
     private ListView mListView;
     private ChannelAdapter mAdapter;
@@ -51,6 +52,7 @@ public class ChannelFragment extends ListFragment
         setHasOptionsMenu(true);
 
         mContext = getActivity().getApplicationContext();
+        mConfig = Config.getInstance(mContext);
         currentChan = getArguments().getString(Config.CHANNEL_KEY);
         mListView = getListView();
 
@@ -100,7 +102,7 @@ public class ChannelFragment extends ListFragment
     void setChannel(String channelId) {
         ((Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
 
-        if (!Config.DVB_HOST.equals("localhost")) {
+        if (!mConfig.getHost().equals("localhost")) {
             mService.setChannel(channelId);
         }
     }

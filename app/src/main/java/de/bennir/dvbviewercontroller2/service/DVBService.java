@@ -21,6 +21,7 @@ public class DVBService {
     private static final String TAG = DVBService.class.toString();
 
     private Context mContext;
+    private Config mConfig;
     private static DVBService _instance;
 
     private RestAdapter restAdapter;
@@ -36,13 +37,15 @@ public class DVBService {
         Log.d(TAG, "DVBService()");
 
         this.mContext = mContext;
+        this.mConfig = Config.getInstance(mContext);
 
         restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://" + Config.DVB_IP + ":" + Config.DVB_PORT + "/dvb")
+                .setEndpoint("http://" + mConfig.getIp() + ":" + mConfig.getPort() + "/dvb")
                 .build();
 
         commandService = restAdapter.create(CommandService.class);
         channelService = restAdapter.create(ChannelService.class);
+
     }
 
     public static DVBService getInstance() {
@@ -51,7 +54,7 @@ public class DVBService {
 
     public static DVBService getInstance(Context mContext) {
         if (_instance == null) {
-            _instance = new DVBService(mContext);
+            _instance = new DVBService(mContext.getApplicationContext());
         }
 
         return _instance;
@@ -63,7 +66,7 @@ public class DVBService {
 
 
     public void sendCommand(DVBCommand cmd) {
-        if (!Config.DVB_HOST.equals("localhost")) {
+        if (!mConfig.getHost().equals("localhost")) {
             commandService.sendCommand(cmd, new Callback<DVBCommand>() {
                 @Override
                 public void success(DVBCommand dvbCommand, Response response) {
@@ -78,7 +81,7 @@ public class DVBService {
     }
 
     public void setChannel(String channelId) {
-        if (!Config.DVB_HOST.equals("localhost")) {
+        if (!mConfig.getHost().equals("localhost")) {
             Channel channel = new Channel();
             channel.ChannelId = channelId;
 
@@ -100,7 +103,9 @@ public class DVBService {
 
         channels.clear();
 
-        if (!Config.DVB_HOST.equals("localhost")) {
+        Log.d(TAG, mConfig.Host);
+
+        if (!mConfig.getHost().equals("localhost")) {
             channelService.getChannels(new Callback<List<Channel>>() {
                 @Override
                 public void success(List<Channel> channels, Response response) {

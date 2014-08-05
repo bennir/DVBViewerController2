@@ -39,12 +39,14 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
     private List<Channel> channels;
     private Context mContext;
     private DVBService mService;
+    private Config mConfig;
 
     public ChannelAdapter(Context context, List<Channel> channels, DVBService service) {
         super(context, R.layout.list_item_channel, channels);
         this.channels = channels;
         this.mContext = context;
         this.mService = service;
+        this.mConfig = Config.getInstance(context);
     }
 
     @Override
@@ -77,7 +79,7 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
         /**
          * Duration Progress
          */
-        if (!Config.DVB_HOST.equals("localhost")) {
+        if (!mConfig.getHost().equals("localhost")) {
             if(channels.get(position).Epg != null) {
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm");
                 String curTime = format.format(new Date());
@@ -113,11 +115,11 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
             viewHolder.progress.setProgress(Double.valueOf(new Random().nextInt(100)).intValue());
         }
 
-        if (!Config.DVB_HOST.equals("localhost")) {
+        if (!mConfig.getHost().equals("localhost")) {
             String url = "";
 
             try {
-                url = "http://" + Config.DVB_IP + ":" + Config.DVB_PORT + "/dvb" +
+                url = "http://" + mConfig.getIp() + ":" + mConfig.getPort() + "/dvb" +
                         "/Logo/" + URLEncoder.encode(channels.get(position).Name, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

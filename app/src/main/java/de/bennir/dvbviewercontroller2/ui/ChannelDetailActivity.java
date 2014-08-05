@@ -2,6 +2,7 @@ package de.bennir.dvbviewercontroller2.ui;
 
 import android.app.ListActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AbsListView;
@@ -11,12 +12,17 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 
 public class ChannelDetailActivity extends ListActivity {
+    private static final String TAG = ChannelDetailActivity.class.toString();
+
     private ListView mListView;
     private ArrayAdapter<String> mAdapter;
     private ImageView mImageView;
+
+    private Config mConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +32,9 @@ public class ChannelDetailActivity extends ListActivity {
         mListView = getListView();
         mImageView = (ImageView) findViewById(R.id.header_imageview);
         mImageView.setImageResource(R.drawable.dvbviewer_controller);
+        mConfig = Config.getInstance(getApplicationContext());
+
+        Log.d(TAG, "Config: " + mConfig.getHost());
 
         ArrayList<String> values = new ArrayList<String>();
         for(int i = 0; i < 20; i++) {
@@ -37,12 +46,13 @@ public class ChannelDetailActivity extends ListActivity {
 
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) { }
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+            }
 
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if(visibleItemCount == 0) return;
-                if(firstVisibleItem != 0) return;
+                if (visibleItemCount == 0) return;
+                if (firstVisibleItem != 0) return;
 
 
             }

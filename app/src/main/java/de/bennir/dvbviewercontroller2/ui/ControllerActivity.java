@@ -67,20 +67,28 @@ public class ControllerActivity extends Activity {
     private boolean mUserLearnedDrawer;
 
     private DVBService mService;
+    private Config mConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controller);
 
-        Config.DVB_HOST = getIntent().getStringExtra(Config.DVBHOST_KEY);
-        Config.DVB_IP = getIntent().getStringExtra(Config.DVBIP_KEY);
-        Config.DVB_PORT = getIntent().getStringExtra(Config.DVBPORT_KEY);
+        if (savedInstanceState != null) {
+            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+            mFromSavedInstanceState = true;
+        }
+
+        mConfig = Config.getInstance(getApplicationContext());
+
+        mConfig.setHost(getIntent().getStringExtra(Config.DVBHOST_KEY));
+        mConfig.setIp(getIntent().getStringExtra(Config.DVBIP_KEY));
+        mConfig.setPort(getIntent().getStringExtra(Config.DVBPORT_KEY));
 
         mService = DVBService.getInstance(getApplicationContext());
         mService.getChannels();
 
-        Log.d(TAG, "Device " + Config.DVB_HOST + " (" + Config.DVB_IP + ":" + Config.DVB_PORT + ")");
+        Log.d(TAG, "Device " + mConfig.getHost() + " (" + mConfig.getIp() + ":" + mConfig.getPort() + ")");
 
         mContainer = (FrameLayout) findViewById(R.id.container);
 
@@ -196,11 +204,6 @@ public class ControllerActivity extends Activity {
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
-
-        if (savedInstanceState != null) {
-            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-            mFromSavedInstanceState = true;
-        }
 
         // Select either the default item (0) or the last selected item.
         selectItem(mCurrentSelectedPosition);
