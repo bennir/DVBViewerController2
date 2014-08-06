@@ -1,7 +1,6 @@
 package de.bennir.dvbviewercontroller2.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,7 @@ import java.util.Random;
 
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.Channel;
-import de.bennir.dvbviewercontroller2.service.DVBService;
+import de.bennir.dvbviewercontroller2.model.DVBHost;
 
 public class ChannelAdapter extends ArrayAdapter<Channel> {
     private static final String TAG = ChannelAdapter.class.toString();
@@ -37,14 +36,13 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
 
     private List<Channel> channels;
     private Context mContext;
+    private DVBHost Host;
 
-    public ChannelAdapter(Context context, List<Channel> channels) {
+    public ChannelAdapter(Context context, List<Channel> channels, DVBHost Host) {
         super(context, R.layout.list_item_channel, channels);
         this.channels = channels;
         this.mContext = context;
-
-        //TODO: DVBServer Object -> Host, Ip, Port
-        this.mConfig = Config.getInstance(context);
+        this.Host = Host;
     }
 
     @Override
@@ -77,7 +75,7 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
         /**
          * Duration Progress
          */
-        if (!mConfig.getHost().equals("localhost")) {
+        if (!Host.Name.equals("localhost")) {
             if(channels.get(position).Epg != null) {
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm");
                 String curTime = format.format(new Date());
@@ -113,11 +111,11 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
             viewHolder.progress.setProgress(Double.valueOf(new Random().nextInt(100)).intValue());
         }
 
-        if (!mConfig.getHost().equals("localhost")) {
+        if (!Host.Name.equals("localhost")) {
             String url = "";
 
             try {
-                url = "http://" + mConfig.getIp() + ":" + mConfig.getPort() + "/dvb" +
+                url = "http://" + Host.Ip + ":" + Host.Port + "/dvb" +
                         "/Logo/" + URLEncoder.encode(channels.get(position).Name, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.EpgInfo;
@@ -17,9 +16,8 @@ public class Config {
 
     // Keys
     public static final String DVBHOST_KEY = "dvb_host";
-    public static final String DVBIP_KEY = "dvb_ip";
-    public static final String DVBPORT_KEY = "dvb_port";
     public static final String CHANNEL_KEY = "channel_name";
+    public static final String GROUP_KEY = "channel_group";
     public static final String CHANNEL_LIST_KEY = "channel_list";
     public static final String CHANNEL_GROUP_LIST_KEY = "channel_group_list";
 
@@ -96,51 +94,5 @@ public class Config {
         }
 
         return channels;
-    }
-
-    public String Host = "";
-    private String Ip = "";
-    private String Port = "";
-
-    private Context mContext;
-
-    private static Config _instance = null;
-
-    private Config(Context context) {
-        Log.d(TAG, "Config()");
-        this.mContext = context;
-    }
-
-    public static Config getInstance(Context mContext) {
-        Log.d(TAG, "getInstance()");
-        if(_instance == null) {
-            _instance = new Config(mContext.getApplicationContext());
-        }
-
-        return _instance;
-    }
-
-    public String getHost() {
-        return Host;
-    }
-
-    public void setHost(String host) {
-        Host = host;
-    }
-
-    public String getIp() {
-        return Ip;
-    }
-
-    public void setIp(String ip) {
-        Ip = ip;
-    }
-
-    public String getPort() {
-        return Port;
-    }
-
-    public void setPort(String port) {
-        Port = port;
     }
 }

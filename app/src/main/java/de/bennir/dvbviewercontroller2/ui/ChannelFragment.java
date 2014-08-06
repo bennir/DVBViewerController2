@@ -25,6 +25,7 @@ import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.adapter.ChannelAdapter;
 import de.bennir.dvbviewercontroller2.model.Channel;
+import de.bennir.dvbviewercontroller2.model.DVBHost;
 import de.bennir.dvbviewercontroller2.service.ChannelService;
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -36,12 +37,10 @@ public class ChannelFragment extends ListFragment
     private static final String TAG = ChannelFragment.class.toString();
 
     private Context mContext;
-    private String currentChan = "";
+    private String currentGroup = "";
     private ListView mListView;
     private ChannelAdapter mAdapter;
-    private String Ip;
-    private String Port;
-    private String Host;
+    private DVBHost Host;
 
     private ChannelService channelService;
     private RestAdapter restAdapter;
@@ -63,13 +62,11 @@ public class ChannelFragment extends ListFragment
 
         mContext = getActivity().getApplicationContext();
 
-        currentChan = getArguments().getString(Config.CHANNEL_KEY);
-        Host = getArguments().getString(Config.DVBHOST_KEY);
-        Ip = getArguments().getString(Config.DVBIP_KEY);
-        Port = getArguments().getString(Config.DVBPORT_KEY);
+        currentGroup = getArguments().getString(Config.GROUP_KEY);
+        Host = getArguments().getParcelable(Config.DVBHOST_KEY);
 
         restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://" + Ip + ":" + Port + "/dvb")
+                .setEndpoint("http://" + Host.Ip + ":" + Host.Port + "/dvb")
                 .build();
 
         channelService = restAdapter.create(ChannelService.class);
@@ -77,14 +74,14 @@ public class ChannelFragment extends ListFragment
         mListView = getListView();
 
         ControllerActivity act = (ControllerActivity) getActivity();
-        act.mTitle = currentChan;
-        getActivity().getActionBar().setTitle(currentChan);
+        act.mTitle = currentGroup;
+        getActivity().getActionBar().setTitle(currentGroup);
 
         ((ControllerActivity) getActivity()).mChannelCallbacks.add(this);
 
-        channels = ((ControllerActivity) getActivity()).channelMap.get(currentChan);
+        channels = ((ControllerActivity) getActivity()).channelMap.get(currentGroup);
 
-        mAdapter = new ChannelAdapter(mContext, channels);
+        mAdapter = new ChannelAdapter(mContext, channels, Host);
         mListView.setAdapter(mAdapter);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -92,18 +89,19 @@ public class ChannelFragment extends ListFragment
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent mIntent = new Intent(getActivity(), ChannelDetailActivity.class);
                 mIntent.putExtra(Config.CHANNEL_KEY, channels.get(position));
+                mIntent.putExtra(Config.DVBHOST_KEY, Host);
 
+                Bundle bundle;
                 if (Build.VERSION.SDK_INT >= 21) {
                     ImageView logo = (ImageView) parent.findViewById(R.id.channel_item_logo);
                     parent.setTransitionGroup(false);
 
                     ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(), logo, "header_image");
-
-                    startActivity(mIntent, options.toBundle());
+                    bundle = options.toBundle();
                 } else {
-
-                    startActivity(mIntent);
+                    bundle = new Bundle();
                 }
+                startActivityForResult(mIntent, 1, bundle);
             }
         });
 
@@ -121,7 +119,7 @@ public class ChannelFragment extends ListFragment
     void setChannel(String channelId) {
         ((Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
 
-        if (!Host.equals("localhost")) {
+        if (!Host.Name.equals("localhost")) {
             Channel channel = new Channel();
             channel.ChannelId = channelId;
 
@@ -160,9 +158,9 @@ public class ChannelFragment extends ListFragment
 
     @Override
     public void onChannelSuccess() {
-        channels = ((ControllerActivity) getActivity()).channelMap.get(currentChan);
+        channels = ((ControllerActivity) getActivity()).channelMap.get(currentGroup);
 
-        mAdapter = new ChannelAdapter(mContext, channels);
+        mAdapter = new ChannelAdapter(mContext, channels, Host);
         mListView.setAdapter(mAdapter);
     }
 

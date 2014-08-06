@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.Channel;
+import de.bennir.dvbviewercontroller2.model.DVBHost;
 
 public class ChannelGroupFragment extends ProgressListFragment
         implements ControllerActivity.ChannelSuccessCallback {
@@ -28,9 +29,7 @@ public class ChannelGroupFragment extends ProgressListFragment
 
     private ArrayList<Channel> mChannels = new ArrayList<Channel>();
     private ArrayList<String> channelGroups = new ArrayList<String>();
-    private String Ip;
-    private String Port;
-    private String Host;
+    private DVBHost Host;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,9 +43,7 @@ public class ChannelGroupFragment extends ProgressListFragment
 
         mContext = getActivity().getApplicationContext();
 
-        Host = getArguments().getString(Config.DVBHOST_KEY);
-        Ip = getArguments().getString(Config.DVBIP_KEY);
-        Port = getArguments().getString(Config.DVBPORT_KEY);
+        Host = getArguments().getParcelable(Config.DVBHOST_KEY);
 
         mChannels = getArguments().getParcelableArrayList(Config.CHANNEL_LIST_KEY);
         channelGroups = getArguments().getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
@@ -68,10 +65,8 @@ public class ChannelGroupFragment extends ProgressListFragment
                 Fragment fragment = new ChannelFragment();
 
                 Bundle bundle = new Bundle();
-                bundle.putString(Config.CHANNEL_KEY, channelGroups.get(i));
-                bundle.putString(Config.DVBHOST_KEY, Host);
-                bundle.putString(Config.DVBPORT_KEY, Ip);
-                bundle.putString(Config.DVBIP_KEY, Port);
+                bundle.putString(Config.GROUP_KEY, channelGroups.get(i));
+                bundle.putParcelable(Config.DVBHOST_KEY, Host);
                 bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
                 bundle.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
                 fragment.setArguments(bundle);

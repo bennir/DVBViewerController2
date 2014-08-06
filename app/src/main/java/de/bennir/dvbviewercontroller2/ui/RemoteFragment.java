@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,15 +15,7 @@ import android.widget.ImageView;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
-import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBCommand;
-import de.bennir.dvbviewercontroller2.service.ChannelService;
-import de.bennir.dvbviewercontroller2.service.CommandService;
-import de.bennir.dvbviewercontroller2.service.DVBService;
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 public class RemoteFragment extends Fragment {
     private static final String TAG = RemoteFragment.class.toString();
@@ -132,7 +123,7 @@ public class RemoteFragment extends Fragment {
                         command = Config.BLUE;
                     }
 
-                    if(command != -1) {
+                    if (command != -1) {
                         ((Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
 
                         DVBCommand cmd = new DVBCommand(command);

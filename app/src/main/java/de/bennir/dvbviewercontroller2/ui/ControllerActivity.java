@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBCommand;
+import de.bennir.dvbviewercontroller2.model.DVBHost;
 import de.bennir.dvbviewercontroller2.model.DVBMenuItem;
 import de.bennir.dvbviewercontroller2.service.ChannelService;
 import de.bennir.dvbviewercontroller2.service.CommandService;
@@ -82,13 +84,10 @@ public class ControllerActivity extends Activity {
     public HashMap<String, List<Channel>> channelMap = new HashMap<String, List<Channel>>();
     private ArrayList<Channel> mChannels = new ArrayList<Channel>();
     private ArrayList<String> channelGroups = new ArrayList<String>();
-    private String Ip;
-    private String Port;
-    private String Host;
+    private DVBHost Host;
 
     private ChannelService channelService;
     private CommandService commandService;
-    private RestAdapter restAdapter;
 
     public List<ChannelSuccessCallback> mChannelCallbacks = new ArrayList<ChannelSuccessCallback>();
 
@@ -102,12 +101,10 @@ public class ControllerActivity extends Activity {
             mFromSavedInstanceState = true;
         }
 
-        Host = getIntent().getStringExtra(Config.DVBHOST_KEY);
-        Ip = getIntent().getStringExtra(Config.DVBIP_KEY);
-        Port = getIntent().getStringExtra(Config.DVBPORT_KEY);
+        Host = getIntent().getParcelableExtra(Config.DVBHOST_KEY);
 
-        restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://" + Ip + ":" + Port + "/dvb")
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint("http://" + Host.Ip + ":" + Host.Port + "/dvb")
                 .build();
 
         commandService = restAdapter.create(CommandService.class);
@@ -115,7 +112,7 @@ public class ControllerActivity extends Activity {
 
         getChannels();
 
-        Log.d(TAG, "Device " + Host + " (" + Ip + ":" + Port + ")");
+        Log.d(TAG, "Device " + Host.Name + " (" + Host.Ip + ":" + Host.Port + ")");
 
         mContainer = (FrameLayout) findViewById(R.id.container);
 
@@ -259,9 +256,7 @@ public class ControllerActivity extends Activity {
                 fragment = new ChannelGroupFragment();
 
                 Bundle bundle = new Bundle();
-                bundle.putString(Config.DVBHOST_KEY, Host);
-                bundle.putString(Config.DVBPORT_KEY, Ip);
-                bundle.putString(Config.DVBIP_KEY, Port);
+                bundle.putParcelable(Config.DVBHOST_KEY, Host);
                 bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
                 bundle.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
 
@@ -294,7 +289,7 @@ public class ControllerActivity extends Activity {
         channelGroups.clear();
         mChannels.clear();
 
-        if (!Host.equals("localhost")) {
+        if (!Host.Name.equals("localhost")) {
             channelService.getChannels(new Callback<ArrayList<Channel>>() {
                 @Override
                 public void success(ArrayList<Channel> channels, Response response) {
@@ -314,6 +309,7 @@ public class ControllerActivity extends Activity {
                 }
             });
         } else {
+            Log.d(TAG, "CreateDemoChannels");
             mChannels = Config.createDemoChannels();
             createChannelMap();
         }
@@ -349,7 +345,7 @@ public class ControllerActivity extends Activity {
     }
 
     public void sendCommand(DVBCommand cmd) {
-        if (!Host.equals("localhost")) {
+        if (!Host.Name.equals("localhost")) {
             commandService.sendCommand(cmd, new Callback<DVBCommand>() {
                 @Override
                 public void success(DVBCommand dvbCommand, Response response) {
@@ -377,6 +373,17 @@ public class ControllerActivity extends Activity {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(R.string.app_name);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                Host = data.getParcelableExtra(Config.DVBHOST_KEY);
+            }
+        }
     }
 
     @Override

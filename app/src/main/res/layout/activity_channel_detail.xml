@@ -6,101 +6,35 @@
 
     <ImageView
         android:id="@+id/header_imageview"
-        android:viewName="header_image"
         android:layout_width="match_parent"
         android:layout_height="180dp"
-        android:scaleType="centerCrop"
         android:adjustViewBounds="true"
-        />
+        android:scaleType="centerCrop"
+        android:viewName="header_image" />
 
     <LinearLayout
         android:id="@+id/header_information"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_height="60dp"
+        android:layout_marginTop="-60dp"
         android:layout_below="@id/header_imageview"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Das Erste"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Das Erste EPG"/>
+            android:text="Das Erste" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="20:15 - 23:00"/>
+            android:text="Das Erste EPG" />
 
-        </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/header_information">
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:text="20:15 - 23:00" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:textAppearance="?android:textAppearanceLarge"
-                android:text="Das Erste"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:textAppearance="?android:textAppearanceLarge"
-                android:text="Das Erste"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:textAppearance="?android:textAppearanceLarge"
-                android:text="Das Erste"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:textAppearance="?android:textAppearanceLarge"
-                android:text="Das Erste"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:textAppearance="?android:textAppearanceLarge"
-                android:text="Das Erste"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:textAppearance="?android:textAppearanceLarge"
-                android:text="Das Erste"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:textAppearance="?android:textAppearanceLarge"
-                android:text="Das Erste"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:textAppearance="?android:textAppearanceLarge"
-                android:text="Das Erste"/>
-            <ListView
-                android:id="@android:id/list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:elevation="10dp"
-                android:background="@android:color/white"
-                />
-            </LinearLayout>
-
-
-        </FrameLayout>
-
+    </LinearLayout>
 </RelativeLayout>
