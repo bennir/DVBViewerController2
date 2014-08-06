@@ -37,7 +37,7 @@ public class ChannelDetailActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_listview);
+        setContentView(R.layout.activity_channel_detail);
 
         Host = getIntent().getParcelableExtra(Config.DVBHOST_KEY);
         channel = getIntent().getParcelableExtra(Config.CHANNEL_KEY);
@@ -52,7 +52,7 @@ public class ChannelDetailActivity extends ListActivity {
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, values);
         mListView.setAdapter(mAdapter);
 
-        View mHeader = getLayoutInflater().from(this).inflate(R.layout.activity_channel_detail, mListView, false);
+        View mHeader = getLayoutInflater().from(this).inflate(R.layout.list_header_epg, mListView, false);
 
         mImageView = (ImageView) mHeader.findViewById(R.id.header_imageview);
         mImageView.setImageResource(R.drawable.dvbviewer_controller);
