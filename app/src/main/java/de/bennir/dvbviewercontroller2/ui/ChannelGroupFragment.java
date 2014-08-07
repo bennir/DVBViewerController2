@@ -48,7 +48,7 @@ public class ChannelGroupFragment extends ProgressListFragment
         mChannels = getArguments().getParcelableArrayList(Config.CHANNEL_LIST_KEY);
         channelGroups = getArguments().getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
 
-        ((ControllerActivity) getActivity()).mChannelCallbacks.add(this);
+        ((ControllerActivity) getActivity()).addChannelCallback(this);
 
         if (channelGroups.isEmpty()) {
             obtainData();
@@ -123,13 +123,13 @@ public class ChannelGroupFragment extends ProgressListFragment
         ControllerActivity act = (ControllerActivity) getActivity();
         act.mTitle = getString(R.string.channels);
 
-        ((ControllerActivity) getActivity()).mChannelCallbacks.add(this);
+        ((ControllerActivity) getActivity()).addChannelCallback(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        ((ControllerActivity) getActivity()).mChannelCallbacks.remove(this);
+        ((ControllerActivity) getActivity()).removeChannelCallback(this);
     }
 }

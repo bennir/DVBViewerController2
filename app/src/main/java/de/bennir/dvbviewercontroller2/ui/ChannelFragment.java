@@ -77,7 +77,7 @@ public class ChannelFragment extends ListFragment
         act.mTitle = currentGroup;
         getActivity().getActionBar().setTitle(currentGroup);
 
-        ((ControllerActivity) getActivity()).mChannelCallbacks.add(this);
+        ((ControllerActivity) getActivity()).addChannelCallback(this);
 
         channels = ((ControllerActivity) getActivity()).channelMap.get(currentGroup);
 
@@ -168,13 +168,13 @@ public class ChannelFragment extends ListFragment
     public void onResume() {
         super.onResume();
 
-        ((ControllerActivity) getActivity()).mChannelCallbacks.add(this);
+        ((ControllerActivity) getActivity()).addChannelCallback(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        ((ControllerActivity) getActivity()).mChannelCallbacks.remove(this);
+        ((ControllerActivity) getActivity()).removeChannelCallback(this);
     }
 }

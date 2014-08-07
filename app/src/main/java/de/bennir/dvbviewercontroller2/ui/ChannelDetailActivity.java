@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.graphics.Palette;
 import android.support.v7.graphics.PaletteItem;
@@ -19,6 +20,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import de.bennir.dvbviewercontroller2.Config;
@@ -36,6 +42,25 @@ public class ChannelDetailActivity extends ListActivity {
 
     private DVBHost Host;
     private Channel channel;
+    private Callback mPaletteCallback = new Callback() {
+        @Override
+        public void onSuccess() {
+            Palette palette = Palette.generate(drawableToBitmap(mImageView.getDrawable()));
+
+            PaletteItem item = palette.getVibrantColor();
+            if (item == null) item = palette.getDarkVibrantColor();
+            if (item == null) item = palette.getDarkMutedColor();
+            if (item != null) {
+                mActionBarBackgroundDrawable = new ColorDrawable(item.getRgb());
+                getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
+            }
+        }
+
+        @Override
+        public void onError() {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +72,30 @@ public class ChannelDetailActivity extends ListActivity {
 
         final View mHeader = getLayoutInflater().from(this).inflate(R.layout.list_header_epg, mListView, false);
         mImageView = (ImageView) mHeader.findViewById(R.id.header_imageview);
-        mImageView.setImageResource(R.drawable.dvbviewer_controller);
 
-        Palette palette = Palette.generate(drawableToBitmap(mImageView.getDrawable()));
-
-//        mActionBarBackgroundDrawable = new ColorDrawable(getResources().getColor(R.color.theme_default_primary));
-        PaletteItem item = palette.getVibrantColor();
-        if (item == null) item = palette.getDarkVibrantColor();
-        mActionBarBackgroundDrawable = new ColorDrawable(item.getRgb());
+        mActionBarBackgroundDrawable = new ColorDrawable(getResources().getColor(R.color.theme_default_primary));
         mActionBarBackgroundDrawable.setAlpha(0);
+
+        if (!Host.Name.equals("localhost")) {
+            String url = "";
+
+            try {
+                url = "http://" + Host.Ip + ":" + Host.Port + "/dvb" +
+                        "/Logo/" + URLEncoder.encode(channel.Name, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            Picasso.with(getApplicationContext())
+                    .load(url)
+                    .into(mImageView, mPaletteCallback);
+        } else {
+            Picasso.with(getApplicationContext())
+                    .load(R.drawable.dvbviewer_controller)
+                    .into(mImageView, mPaletteCallback);
+        }
+
+        Log.d(TAG, "SdkInt: " + Build.VERSION.SDK_INT);
 
         getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
         getActionBar().setTitle(channel.Name);

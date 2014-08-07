@@ -89,7 +89,7 @@ public class ControllerActivity extends Activity {
     private ChannelService channelService;
     private CommandService commandService;
 
-    public List<ChannelSuccessCallback> mChannelCallbacks = new ArrayList<ChannelSuccessCallback>();
+    private List<ChannelSuccessCallback> mChannelCallbacks = new ArrayList<ChannelSuccessCallback>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -503,6 +503,24 @@ public class ControllerActivity extends Activity {
             return convertView;
         }
 
+    }
+
+    public void addChannelCallback(Fragment fragment) {
+        try {
+            if(!mChannelCallbacks.contains((ChannelSuccessCallback) fragment)) {
+                mChannelCallbacks.add((ChannelSuccessCallback) fragment);
+            }
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Fragment must implement ChannelSuccessCallback.");
+        }
+    }
+
+    public void removeChannelCallback(Fragment fragment) {
+        try {
+            mChannelCallbacks.remove((ChannelSuccessCallback) fragment);
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Fragment must implement ChannelSuccessCallback.");
+        }
     }
 
     public static interface ChannelSuccessCallback {

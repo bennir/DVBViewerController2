@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="56dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="?android:attr/activatedBackgroundIndicator">
 
     <ImageView
         android:id="@+id/menu_icon"
         android:layout_width="60dp"
         android:layout_height="56dp"
-        android:background="?android:attr/activatedBackgroundIndicator"
         android:layout_gravity="center"
         android:paddingStart="8dp"
         android:paddingTop="8dp"
@@ -20,7 +20,6 @@
         android:id="@+id/menu_title"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="?android:attr/activatedBackgroundIndicator"
         android:gravity="center_vertical"
         android:minHeight="?android:attr/listPreferredItemHeight"
         android:text="@string/action_example"
