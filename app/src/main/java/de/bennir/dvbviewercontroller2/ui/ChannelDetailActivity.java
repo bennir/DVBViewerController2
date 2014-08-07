@@ -2,20 +2,22 @@ package de.bennir.dvbviewercontroller2.ui;
 
 import android.app.ListActivity;
 import android.content.Intent;
-import android.graphics.Rect;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v7.graphics.Palette;
+import android.support.v7.graphics.PaletteItem;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
@@ -30,6 +32,7 @@ public class ChannelDetailActivity extends ListActivity {
     private ListView mListView;
     private ArrayAdapter<String> mAdapter;
     private ImageView mImageView;
+    private Drawable mActionBarBackgroundDrawable;
 
     private DVBHost Host;
     private Channel channel;
@@ -42,20 +45,30 @@ public class ChannelDetailActivity extends ListActivity {
         Host = getIntent().getParcelableExtra(Config.DVBHOST_KEY);
         channel = getIntent().getParcelableExtra(Config.CHANNEL_KEY);
 
+        final View mHeader = getLayoutInflater().from(this).inflate(R.layout.list_header_epg, mListView, false);
+        mImageView = (ImageView) mHeader.findViewById(R.id.header_imageview);
+        mImageView.setImageResource(R.drawable.dvbviewer_controller);
+
+        Palette palette = Palette.generate(drawableToBitmap(mImageView.getDrawable()));
+
+//        mActionBarBackgroundDrawable = new ColorDrawable(getResources().getColor(R.color.theme_default_primary));
+        PaletteItem item = palette.getVibrantColor();
+        if (item == null) item = palette.getDarkVibrantColor();
+        mActionBarBackgroundDrawable = new ColorDrawable(item.getRgb());
+        mActionBarBackgroundDrawable.setAlpha(0);
+
+        getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
+        getActionBar().setTitle(channel.Name);
+
         mListView = getListView();
 
         ArrayList<String> values = new ArrayList<String>();
-        for(int i = 0; i < 20; i++) {
+        for (int i = 0; i < 20; i++) {
             values.add(channel.Name + " " + i);
         }
 
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, values);
         mListView.setAdapter(mAdapter);
-
-        View mHeader = getLayoutInflater().from(this).inflate(R.layout.list_header_epg, mListView, false);
-
-        mImageView = (ImageView) mHeader.findViewById(R.id.header_imageview);
-        mImageView.setImageResource(R.drawable.dvbviewer_controller);
 
         mListView.addHeaderView(mHeader);
 
@@ -67,9 +80,20 @@ public class ChannelDetailActivity extends ListActivity {
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if (visibleItemCount == 0) return;
-                if (firstVisibleItem != 0) return;
+                if (firstVisibleItem != 0) {
+                    mActionBarBackgroundDrawable.setAlpha(255);
+                    return;
+                }
 
                 mImageView.setTranslationY(-mListView.getChildAt(0).getTop() / 2);
+
+                int top = Math.abs(mHeader.getTop());
+                int headerViewHeight = mHeader.getMeasuredHeight();
+
+                float ratio = (float) Math.min(Math.max(0, top), headerViewHeight) / headerViewHeight;
+                int newAlpha = (int) (ratio * 255);
+
+                mActionBarBackgroundDrawable.setAlpha(newAlpha);
             }
         });
     }
@@ -100,11 +124,29 @@ public class ChannelDetailActivity extends ListActivity {
             return true;
         }
 
-        if(id == android.R.id.home) {
+        if (id == android.R.id.home) {
             onBackPressed();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        int width = drawable.getIntrinsicWidth();
+        width = width > 0 ? width : 1;
+        int height = drawable.getIntrinsicHeight();
+        height = height > 0 ? height : 1;
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 }
