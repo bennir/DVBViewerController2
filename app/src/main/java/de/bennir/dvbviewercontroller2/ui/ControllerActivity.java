@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -78,9 +79,6 @@ public class ControllerActivity extends Activity {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-//    private DVBService mService;
-//    private Config mConfig;
-
     public HashMap<String, List<Channel>> channelMap = new HashMap<String, List<Channel>>();
     private ArrayList<Channel> mChannels = new ArrayList<Channel>();
     private ArrayList<String> channelGroups = new ArrayList<String>();
@@ -90,6 +88,21 @@ public class ControllerActivity extends Activity {
     private CommandService commandService;
 
     private List<ChannelSuccessCallback> mChannelCallbacks = new ArrayList<ChannelSuccessCallback>();
+    private Runnable mDemoChannelRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d(TAG, "CreateDemoChannels");
+            mChannels = Config.createDemoChannels();
+            createChannelMap();
+
+            for (ChannelSuccessCallback cb : mChannelCallbacks) {
+                if (cb != null) {
+                    cb.onChannelSuccess();
+                }
+            }
+        }
+    };
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -309,9 +322,8 @@ public class ControllerActivity extends Activity {
                 }
             });
         } else {
-            Log.d(TAG, "CreateDemoChannels");
-            mChannels = Config.createDemoChannels();
-            createChannelMap();
+            mHandler = new Handler();
+            mHandler.postDelayed(mDemoChannelRunnable, 3000);
         }
     }
 
