@@ -15,5 +15,6 @@
     <string name="desc_channel_logo">Channel Logo</string>
     <string name="title_activity_channel_detail">ChannelDetailActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="menu_search">Search</string>
 
 </resources>

@@ -258,6 +258,7 @@ public class ControllerActivity extends Activity {
         Fragment fragment;
 
         int pos = position;
+        Bundle bundle = new Bundle();
 
         switch (pos) {
             case 0:
@@ -268,7 +269,6 @@ public class ControllerActivity extends Activity {
                 mTitle = getString(R.string.channels);
                 fragment = new ChannelGroupFragment();
 
-                Bundle bundle = new Bundle();
                 bundle.putParcelable(Config.DVBHOST_KEY, Host);
                 bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
                 bundle.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
@@ -277,7 +277,12 @@ public class ControllerActivity extends Activity {
                 break;
             case 2:
                 mTitle = getString(R.string.epg);
-                fragment = new RemoteFragment();
+                fragment = new ChannelSearchFragment();
+
+                bundle.putParcelable(Config.DVBHOST_KEY, Host);
+                bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
+
+                fragment.setArguments(bundle);
                 break;
             case 3:
                 mTitle = getString(R.string.timers);

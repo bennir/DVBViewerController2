@@ -36,6 +36,18 @@ public class Config {
     public static int GREEN     = 75;
     public static int BLUE      = 77;
 
+    public static Channel getChannelByName(String channelName, ArrayList<Channel> channels) {
+        Channel ret;
+        for(Channel chan : channels) {
+            if(chan.Name.equals(channelName)) {
+                ret = chan;
+                return ret;
+            }
+        }
+
+        return null;
+    }
+
     // TODO: JSON RAW File
     public static ArrayList<Channel> createDemoChannels() {
         Log.d(TAG, "createDemoChannels()");

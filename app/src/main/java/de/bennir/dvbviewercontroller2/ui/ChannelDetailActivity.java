@@ -112,28 +112,17 @@ public class ChannelDetailActivity extends ListActivity {
 
         mListView.addHeaderView(mHeader);
 
-        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        mListView.setOnScrollListener(new EndlessScrollListener(mImageView, mActionBarBackgroundDrawable, mHeader) {
             @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) {
-            }
+            public void onLoadMore(int page, int totalItemsCount) {
+                if(totalItemsCount < 50) {
+                    ArrayList<String> values = new ArrayList<String>();
+                    for (int i = 0; i < 10; i++) {
+                        values.add("NEW ITEMS " + i);
+                    }
 
-            @Override
-            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (visibleItemCount == 0) return;
-                if (firstVisibleItem != 0) {
-                    mActionBarBackgroundDrawable.setAlpha(255);
-                    return;
+                    mAdapter.addAll(values);
                 }
-
-                mImageView.setTranslationY(-mListView.getChildAt(0).getTop() / 2);
-
-                int top = Math.abs(mHeader.getTop());
-                int headerViewHeight = mHeader.getMeasuredHeight();
-
-                float ratio = (float) Math.min(Math.max(0, top), headerViewHeight) / headerViewHeight;
-                int newAlpha = (int) (ratio * 255);
-
-                mActionBarBackgroundDrawable.setAlpha(newAlpha);
             }
         });
     }
@@ -150,7 +139,7 @@ public class ChannelDetailActivity extends ListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.channel_detail, menu);
+        getMenuInflater().inflate(R.menu.refresh, menu);
         return true;
     }
 
@@ -160,7 +149,9 @@ public class ChannelDetailActivity extends ListActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.menu_refresh) {
+            obtainData();
+            
             return true;
         }
 
@@ -170,6 +161,9 @@ public class ChannelDetailActivity extends ListActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void obtainData() {
     }
 
     public static Bitmap drawableToBitmap(Drawable drawable) {
