@@ -1,6 +1,5 @@
 package de.bennir.dvbviewercontroller2;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -57,7 +56,7 @@ public class Config {
         test.Name = "Das Erste HD";
         test.Group = "ARD";
         EpgInfo epg = new EpgInfo();
-        epg.ChannelName = test.Name;
+        epg.ChannelId = test.Name;
         epg.Desc = "Nachrichten";
         epg.Time = "20:15";
         epg.Title = "Nachrichten";
@@ -70,7 +69,7 @@ public class Config {
             test.Name = "NDR HD " + i;
             test.Group = "ARD";
             epg = new EpgInfo();
-            epg.ChannelName = test.Name;
+            epg.ChannelId = test.Name;
             epg.Desc = "Nachrichten";
             epg.Time = "20:15";
             epg.Title = "Nachrichten";
@@ -83,7 +82,7 @@ public class Config {
         test.Name = "ZDF HD";
         test.Group = "ZDF";
         epg = new EpgInfo();
-        epg.ChannelName = test.Name;
+        epg.ChannelId = test.Name;
         epg.Desc = "Nachrichten";
         epg.Time = "20:15";
         epg.Title = "Nachrichten";
@@ -96,7 +95,7 @@ public class Config {
             test.Name = "ZDF Kultur " + i;
             test.Group = "ZDF";
             epg = new EpgInfo();
-            epg.ChannelName = test.Name;
+            epg.ChannelId = test.Name;
             epg.Desc = "Nachrichten";
             epg.Time = "20:15";
             epg.Title = "Nachrichten";

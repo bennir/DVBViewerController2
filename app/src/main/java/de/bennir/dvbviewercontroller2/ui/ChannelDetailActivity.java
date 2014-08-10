@@ -7,16 +7,12 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.graphics.Palette;
 import android.support.v7.graphics.PaletteItem;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -26,19 +22,31 @@ import com.squareup.picasso.Picasso;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
+import de.bennir.dvbviewercontroller2.adapter.EpgInfoAdapter;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
+import de.bennir.dvbviewercontroller2.model.EpgInfo;
+import de.bennir.dvbviewercontroller2.service.EpgService;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class ChannelDetailActivity extends ListActivity {
     private static final String TAG = ChannelDetailActivity.class.toString();
 
     private ListView mListView;
-    private ArrayAdapter<String> mAdapter;
+    private EpgInfoAdapter mAdapter;
     private ImageView mImageView;
     private Drawable mActionBarBackgroundDrawable;
+    private List<EpgInfo> Epg = new ArrayList<EpgInfo>();
+
+
+    private RestAdapter restAdapter;
+    private EpgService epgService;
 
     private DVBHost Host;
     private Channel channel;
@@ -69,10 +77,45 @@ public class ChannelDetailActivity extends ListActivity {
 
         Host = getIntent().getParcelableExtra(Config.DVBHOST_KEY);
         channel = getIntent().getParcelableExtra(Config.CHANNEL_KEY);
-
+        mListView = getListView();
         final View mHeader = getLayoutInflater().from(this).inflate(R.layout.list_header_epg, mListView, false);
         mImageView = (ImageView) mHeader.findViewById(R.id.header_imageview);
 
+        setupHeader();
+
+        getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
+        getActionBar().setTitle(channel.Name);
+
+        restAdapter = new RestAdapter.Builder()
+                .setEndpoint("http://" + Host.Ip + ":" + Host.Port + "/dvb")
+                .build();
+        epgService = restAdapter.create(EpgService.class);
+
+        if (Epg.isEmpty()) {
+            obtainData();
+        } else {
+            mAdapter = new EpgInfoAdapter(getApplicationContext(), Epg, Host);
+        }
+
+//        ArrayList<String> values = new ArrayList<String>();
+//        for (int i = 0; i < 20; i++) {
+//            values.add(channel.Name + " " + i);
+//        }
+
+//        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, values);
+//        mListView.setAdapter(mAdapter);
+
+        mListView.addHeaderView(mHeader);
+
+        mListView.setOnScrollListener(new EndlessScrollListener(mImageView, mActionBarBackgroundDrawable, mHeader) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                // TODO: load more
+            }
+        });
+    }
+
+    private void setupHeader() {
         mActionBarBackgroundDrawable = new ColorDrawable(getResources().getColor(R.color.theme_default_primary));
         mActionBarBackgroundDrawable.setAlpha(0);
 
@@ -94,37 +137,6 @@ public class ChannelDetailActivity extends ListActivity {
                     .load(R.drawable.dvbviewer_controller)
                     .into(mImageView, mPaletteCallback);
         }
-
-        Log.d(TAG, "SdkInt: " + Build.VERSION.SDK_INT);
-
-        getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
-        getActionBar().setTitle(channel.Name);
-
-        mListView = getListView();
-
-        ArrayList<String> values = new ArrayList<String>();
-        for (int i = 0; i < 20; i++) {
-            values.add(channel.Name + " " + i);
-        }
-
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, values);
-        mListView.setAdapter(mAdapter);
-
-        mListView.addHeaderView(mHeader);
-
-        mListView.setOnScrollListener(new EndlessScrollListener(mImageView, mActionBarBackgroundDrawable, mHeader) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                if(totalItemsCount < 50) {
-                    ArrayList<String> values = new ArrayList<String>();
-                    for (int i = 0; i < 10; i++) {
-                        values.add("NEW ITEMS " + i);
-                    }
-
-                    mAdapter.addAll(values);
-                }
-            }
-        });
     }
 
     @Override
@@ -151,7 +163,7 @@ public class ChannelDetailActivity extends ListActivity {
         int id = item.getItemId();
         if (id == R.id.menu_refresh) {
             obtainData();
-            
+
             return true;
         }
 
@@ -164,6 +176,24 @@ public class ChannelDetailActivity extends ListActivity {
     }
 
     private void obtainData() {
+        Epg.clear();
+
+        if (!Host.Name.equals("localhost")) {
+            epgService.getEpg(channel.ChannelId, "Current", new retrofit.Callback<ArrayList<EpgInfo>>() {
+                @Override
+                public void success(ArrayList<EpgInfo> epgInfo, Response response) {
+                    Epg = epgInfo;
+
+                    mAdapter = new EpgInfoAdapter(getApplicationContext(), Epg, Host);
+                    mListView.setAdapter(mAdapter);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        }
     }
 
     public static Bitmap drawableToBitmap(Drawable drawable) {

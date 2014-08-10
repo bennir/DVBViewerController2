@@ -6,8 +6,8 @@
     android:clipToPadding="false"
     android:scrollbarStyle="outsideOverlay"
     android:padding="0dp"
-    android:dividerHeight="@dimen/dvblist_divider"
-    android:divider="#00000000"
-    android:background="#00000000"
+    android:divider="@android:color/transparent"
+    android:background="@color/theme_background"
     android:overScrollMode="never"
+    android:elevation="10dp"
     />
