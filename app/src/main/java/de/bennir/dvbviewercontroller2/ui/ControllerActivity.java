@@ -80,8 +80,8 @@ public class ControllerActivity extends Activity {
     private boolean mUserLearnedDrawer;
 
     public HashMap<String, List<Channel>> channelMap = new HashMap<String, List<Channel>>();
-    private ArrayList<Channel> mChannels = new ArrayList<Channel>();
-    private ArrayList<String> channelGroups = new ArrayList<String>();
+    public ArrayList<Channel> mChannels = new ArrayList<Channel>();
+    public ArrayList<String> channelGroups = new ArrayList<String>();
     private DVBHost Host;
 
     private ChannelService channelService;

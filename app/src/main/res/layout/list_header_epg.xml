@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="de.bennir.dvbviewercontroller2.ui.ChannelDetailActivity"
-    android:background="@android:color/transparent">
+    android:background="#00000000">
 
     <ImageView
         android:id="@+id/header_imageview"
@@ -13,9 +13,9 @@
         android:scaleType="centerCrop"
         android:viewName="header_image" />
 
-    <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:background="@drawable/gradient" />-->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/gradient" />
 
 </FrameLayout>

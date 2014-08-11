@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -91,6 +92,9 @@ public class ChannelSearchFragment extends ProgressListFragment
 
     @Override
     public void onChannelSuccess() {
+        Log.d(TAG, "onChannelSuccess");
+        mChannels = ((ControllerActivity) getActivity()).mChannels;
+
         for (Channel chan : mChannels) {
             mChannelNames.add(chan.Name);
         }

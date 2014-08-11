@@ -3,6 +3,7 @@ package de.bennir.dvbviewercontroller2;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.EpgInfo;
@@ -105,5 +106,23 @@ public class Config {
         }
 
         return channels;
+    }
+
+    public static List<EpgInfo> createDemoEpg() {
+        List<EpgInfo> epg = new ArrayList<EpgInfo>();
+
+        EpgInfo entry = new EpgInfo();
+        entry.Title = "Tagesschau";
+        entry.Time = "20:00";
+        entry.Duration = "15";
+        entry.ChannelId = "Das Erste HD";
+        entry.EndTime = "20:15";
+        entry.Desc = "Die Nachrichten und das Wetter";
+
+        for(int i = 0; i < 10; i++) {
+            epg.add(entry);
+        }
+
+        return epg;
     }
 }

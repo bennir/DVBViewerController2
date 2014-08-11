@@ -42,7 +42,7 @@ public class ChannelDetailActivity extends ListActivity {
     private EpgInfoAdapter mAdapter;
     private ImageView mImageView;
     private Drawable mActionBarBackgroundDrawable;
-    private List<EpgInfo> Epg = new ArrayList<EpgInfo>();
+    private List<EpgInfo> epg = new ArrayList<EpgInfo>();
 
 
     private RestAdapter restAdapter;
@@ -91,19 +91,11 @@ public class ChannelDetailActivity extends ListActivity {
                 .build();
         epgService = restAdapter.create(EpgService.class);
 
-        if (Epg.isEmpty()) {
+        if (epg.isEmpty()) {
             obtainData();
         } else {
-            mAdapter = new EpgInfoAdapter(getApplicationContext(), Epg, Host);
+            mAdapter = new EpgInfoAdapter(getApplicationContext(), epg, Host);
         }
-
-//        ArrayList<String> values = new ArrayList<String>();
-//        for (int i = 0; i < 20; i++) {
-//            values.add(channel.Name + " " + i);
-//        }
-
-//        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, values);
-//        mListView.setAdapter(mAdapter);
 
         mListView.addHeaderView(mHeader);
 
@@ -176,15 +168,15 @@ public class ChannelDetailActivity extends ListActivity {
     }
 
     private void obtainData() {
-        Epg.clear();
+        epg.clear();
 
         if (!Host.Name.equals("localhost")) {
             epgService.getEpg(channel.ChannelId, "Current", new retrofit.Callback<ArrayList<EpgInfo>>() {
                 @Override
                 public void success(ArrayList<EpgInfo> epgInfo, Response response) {
-                    Epg = epgInfo;
+                    epg = epgInfo;
 
-                    mAdapter = new EpgInfoAdapter(getApplicationContext(), Epg, Host);
+                    mAdapter = new EpgInfoAdapter(getApplicationContext(), epg, Host);
                     mListView.setAdapter(mAdapter);
                 }
 
@@ -193,6 +185,11 @@ public class ChannelDetailActivity extends ListActivity {
 
                 }
             });
+        } else {
+            epg = Config.createDemoEpg();
+
+            mAdapter = new EpgInfoAdapter(getApplicationContext(), epg, Host);
+            mListView.setAdapter(mAdapter);
         }
     }
 

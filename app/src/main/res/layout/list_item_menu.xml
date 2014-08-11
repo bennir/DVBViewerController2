@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:orientation="horizontal"
-    android:background="?android:attr/activatedBackgroundIndicator">
+    android:background="@drawable/list_item_selector">
 
     <ImageView
         android:id="@+id/menu_icon"
