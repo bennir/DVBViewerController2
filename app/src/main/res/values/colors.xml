@@ -3,9 +3,10 @@
     <color name="theme_default_primary_light">#f36c60</color>
     <color name="theme_default_primary">#d01716</color>
     <color name="theme_default_primary_dark">#b0120a</color>
-    <color name="theme_default_accent">#7cb342</color>
-    <color name="theme_default_accent_light">#aed581</color>
-    <color name="theme_default_accent_dark">#689f38</color>
+    <color name="theme_default_accent">#7986cb</color>
+    <color name="theme_default_accent_light">#c5cae9</color>
+    <color name="theme_default_accent_dark">#3f51b5</color>
+
 
     <color name="theme_background">#e2e2e2</color>
     <color name="transparent">#00000000</color>

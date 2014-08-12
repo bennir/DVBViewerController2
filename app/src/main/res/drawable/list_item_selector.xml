@@ -5,7 +5,7 @@
         android:drawable="@color/theme_default_accent_light"/>
 
     <item android:state_activated="true"
-        android:drawable="@color/theme_default_accent"/>
+        android:drawable="@color/theme_default_accent_dark"/>
 
     <item android:drawable="@android:color/transparent"/>
 </selector>

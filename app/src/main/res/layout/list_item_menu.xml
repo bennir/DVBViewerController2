@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:orientation="horizontal"
+    android:foreground="?android:attr/selectableItemBackground"
     android:background="@drawable/list_item_selector">
 
     <ImageView
@@ -11,9 +12,11 @@
         android:layout_height="56dp"
         android:layout_gravity="center"
         android:paddingStart="8dp"
+        android:paddingLeft="8dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:paddingEnd="12dp"
+        android:paddingRight="12dp"
         />
 
     <TextView
@@ -23,6 +26,5 @@
         android:gravity="center_vertical"
         android:minHeight="?android:attr/listPreferredItemHeight"
         android:text="@string/action_example"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:textColor="@android:color/black" />
+        android:textAppearance="?android:attr/textAppearanceListItemSmall" />
 </LinearLayout>
