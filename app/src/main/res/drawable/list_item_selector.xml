@@ -2,10 +2,10 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true"
-        android:drawable="@color/theme_default_accent_light"/>
+        android:color="@color/theme_default_accent_dark"/>
 
     <item android:state_activated="true"
-        android:drawable="@color/theme_default_accent_dark"/>
+        android:color="@color/theme_default_accent_dark"/>
 
-    <item android:drawable="@android:color/transparent"/>
+    <item android:color="@color/theme_default_text"/>
 </selector>

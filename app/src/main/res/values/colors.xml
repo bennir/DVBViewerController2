@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="theme_default_primary_light">#f36c60</color>
-    <color name="theme_default_primary">#d01716</color>
-    <color name="theme_default_primary_dark">#b0120a</color>
-    <color name="theme_default_accent">#7986cb</color>
-    <color name="theme_default_accent_light">#c5cae9</color>
-    <color name="theme_default_accent_dark">#3f51b5</color>
+    <color name="theme_default_primary_light">#c5cae9</color>
+    <color name="theme_default_primary">#3f51b5</color>
+    <color name="theme_default_primary_dark">#303f9f</color>
+    <color name="theme_default_accent">#cddc39</color>
+    <color name="theme_default_accent_light">#f0f4c3</color>
+    <color name="theme_default_accent_dark">#afb42b</color>
 
+    <color name="theme_default_text">#de000000</color>
+    <color name="theme_default_text_secondary">#8a000000</color>
+    <color name="theme_default_text_hint">#42000000</color>
+    <color name="theme_default_text_divider">#1e000000</color>
 
     <color name="theme_background">#e2e2e2</color>
     <color name="transparent">#00000000</color>
