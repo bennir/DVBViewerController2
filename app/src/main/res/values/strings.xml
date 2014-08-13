@@ -16,5 +16,6 @@
     <string name="title_activity_channel_detail">ChannelDetailActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_search">Search</string>
+    <string name="select_device">Select Device</string>
 
 </resources>

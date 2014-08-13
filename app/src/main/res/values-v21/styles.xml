@@ -27,7 +27,6 @@
     <style name="MainActionBar" parent="android:Widget.Material.Light.ActionBar">
         <item name="android:background">?android:colorPrimaryDark</item>
         <item name="android:displayOptions">showTitle|homeAsUp</item>
-        <item name="android:homeAsUpIndicator">@drawable/ic_ab_drawer</item>
         <item name="android:titleTextStyle">@style/MainThemeActionBarTitleTextStyle</item>
     </style>
 

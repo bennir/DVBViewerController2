@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -218,21 +219,21 @@ public class ControllerActivity extends Activity {
             // Tablet Layout, 2 Columns
             mTitle = getString(R.string.remote);
             if (mContainer.getTag().equals("two_column")) {
-                adapter.add(new DVBMenuItem(getString(R.string.remote), R.drawable.ic_ab_up_white));
+                adapter.add(new DVBMenuItem(getString(R.string.remote), R.drawable.ic_action_remote));
             }
 
 
             // Tablet Layout, 3 Columns
             if (mContainer.getTag().equals("three_column")) {
                 mTitle = getString(R.string.channels);
-                adapter.add(new DVBMenuItem("three_column", R.drawable.ic_ab_up_white));
+                adapter.add(new DVBMenuItem(getString(R.string.remote), R.drawable.ic_action_remote));
 
                 mCurrentSelectedPosition++;
             }
 
-            adapter.add(new DVBMenuItem(getString(R.string.channels), R.drawable.ic_ab_up_white));
-            adapter.add(new DVBMenuItem(getString(R.string.epg), R.drawable.ic_ab_up_white));
-            adapter.add(new DVBMenuItem(getString(R.string.timers), R.drawable.ic_ab_up_white));
+            adapter.add(new DVBMenuItem(getString(R.string.channels), R.drawable.ic_action_channels));
+            adapter.add(new DVBMenuItem(getString(R.string.epg), R.drawable.ic_action_epg));
+            adapter.add(new DVBMenuItem(getString(R.string.timers), R.drawable.ic_action_timers));
 
             mDrawerListView.setAdapter(adapter);
         }
@@ -513,6 +514,8 @@ public class ControllerActivity extends Activity {
                 TextView title = (TextView) convertView.findViewById(R.id.menu_title);
                 ImageView icon = (ImageView) convertView.findViewById(R.id.menu_icon);
 
+                Typeface tf = Typeface.createFromAsset(getAssets(),"fonts/Roboto-Medium.ttf");
+                title.setTypeface(tf);
                 title.setText(getItem(position).getTitle());
                 icon.setImageDrawable(getResources().getDrawable(getItem(position).getIcon()));
             }

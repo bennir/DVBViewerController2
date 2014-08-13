@@ -4,6 +4,7 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -75,6 +76,8 @@ public class NsdActivity extends ListActivity {
                 startActivity(mIntent);
 
                 finish();
+
+                break;
         }
 
         return false;
@@ -87,7 +90,7 @@ public class NsdActivity extends ListActivity {
 
         mNsdManager = (NsdManager) getSystemService(NSD_SERVICE);
 
-        getActionBar().setTitle("Select Device");
+        getActionBar().setTitle(getString(R.string.select_device));
 
         initializeNsd();
         discoverServices();

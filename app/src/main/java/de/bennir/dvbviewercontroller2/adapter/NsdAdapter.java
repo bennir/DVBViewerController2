@@ -1,6 +1,7 @@
 package de.bennir.dvbviewercontroller2.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.nsd.NsdServiceInfo;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +16,14 @@ import de.bennir.dvbviewercontroller2.R;
 public class NsdAdapter extends ArrayAdapter<NsdServiceInfo> {
     private List<NsdServiceInfo> items;
     private int itemLayout;
+    private Context mContext;
 
     public NsdAdapter(Context context, int resource, List<NsdServiceInfo> items) {
         super(context, resource, items);
 
         this.items = items;
         this.itemLayout = resource;
+        this.mContext = context;
     }
 
     @Override
@@ -43,6 +46,8 @@ public class NsdAdapter extends ArrayAdapter<NsdServiceInfo> {
             holder = (ViewHolder) v.getTag();
         }
 
+        Typeface tf = Typeface.createFromAsset(mContext.getAssets(),"fonts/Roboto-Medium.ttf");
+        holder.serviceName.setTypeface(tf);
         holder.serviceName.setText(items.get(position).getServiceName());
         holder.serviceHost.setText(items.get(position).getHost().getHostAddress());
         holder.servicePort.setText(String.valueOf(items.get(position).getPort()));
