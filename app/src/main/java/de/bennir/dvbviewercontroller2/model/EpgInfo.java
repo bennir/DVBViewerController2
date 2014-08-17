@@ -18,26 +18,28 @@ public class EpgInfo
     };
 
     public String Time;
-    public String EndTime;
+    public long EndTime;
     public String ChannelId;
     public String Title;
     public String Desc;
     public String Duration;
+    public String Date;
 
     public EpgInfo() {}
 
     private EpgInfo(Parcel in) {
         Time = in.readString();
-        EndTime = in.readString();
+        EndTime = in.readLong();
         ChannelId = in.readString();
         Title = in.readString();
         Desc = in.readString();
         Duration = in.readString();
+        Date = in.readString();
     }
 
     @Override
     public String toString() {
-        return Time + ";" + EndTime + ";" + ChannelId + ";" + Title + ";" + Desc + ";" + Duration + ";";
+        return Time + ";" + EndTime + ";" + ChannelId + ";" + Title + ";" + Desc + ";" + Duration + ";" + Date + ";";
     }
 
     @Override
@@ -48,10 +50,11 @@ public class EpgInfo
     @Override
     public void writeToParcel(Parcel out, int i) {
         out.writeString(Time);
-        out.writeString(EndTime);
+        out.writeLong(EndTime);
         out.writeString(ChannelId);
         out.writeString(Title);
         out.writeString(Desc);
         out.writeString(Duration);
+        out.writeString(Date);
     }
 }

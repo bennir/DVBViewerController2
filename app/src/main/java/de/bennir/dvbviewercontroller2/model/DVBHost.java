@@ -53,4 +53,9 @@ public class DVBHost
         out.writeString(Ip);
         out.writeString(Port);
     }
+
+    @Override
+    public String toString() {
+        return Name + " (" + Ip + ":" + Port + ")";
+    }
 }

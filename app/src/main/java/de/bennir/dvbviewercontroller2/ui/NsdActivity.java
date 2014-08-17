@@ -68,14 +68,17 @@ public class NsdActivity extends ListActivity {
 
                 break;
             case 1:
-                Intent mIntent = new Intent(NsdActivity.this, ControllerActivity.class);
+                stopDiscovery();
+
+                Intent mIntent = new Intent(getApplicationContext(), ControllerActivity.class);
                 DVBHost host = new DVBHost("localhost", "127.0.0.1", "8000");
                 mIntent.putExtra(Config.DVBHOST_KEY, host);
+                mIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
-                stopDiscovery();
                 startActivity(mIntent);
-
                 finish();
+
+                overridePendingTransition(R.anim.content_right_in, R.anim.content_left_out);
 
                 break;
         }
@@ -104,14 +107,16 @@ public class NsdActivity extends ListActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 NsdServiceInfo nsd = mAdapter.getItem(i);
 
-                Intent mIntent = new Intent(NsdActivity.this, ControllerActivity.class);
+                Intent mIntent = new Intent(getApplicationContext(), ControllerActivity.class);
                 DVBHost host = new DVBHost(nsd);
                 mIntent.putExtra(Config.DVBHOST_KEY, host);
 
                 stopDiscovery();
-                startActivity(mIntent);
 
+                startActivity(mIntent);
                 finish();
+
+                overridePendingTransition(R.anim.content_right_in, R.anim.content_left_out);
             }
         });
     }

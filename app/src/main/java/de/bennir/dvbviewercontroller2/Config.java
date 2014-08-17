@@ -114,9 +114,10 @@ public class Config {
         EpgInfo entry = new EpgInfo();
         entry.Title = "Tagesschau";
         entry.Time = "20:00";
+        entry.Date = "01.01.";
         entry.Duration = "15";
         entry.ChannelId = "Das Erste HD";
-        entry.EndTime = "20:15";
+        entry.EndTime = 635438340000000000L;
         entry.Desc = "Die Nachrichten und das Wetter";
 
         for(int i = 0; i < 10; i++) {

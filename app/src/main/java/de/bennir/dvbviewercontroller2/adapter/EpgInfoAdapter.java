@@ -27,9 +27,7 @@ public class EpgInfoAdapter extends ArrayAdapter<EpgInfo> {
     static class EpgInfoViewHolder {
         TextView Current;
         TextView Time;
-        TextView Duration;
         TextView Description;
-        ProgressBar Progress;
         TextView ChannelId;
     }
 
@@ -55,9 +53,7 @@ public class EpgInfoAdapter extends ArrayAdapter<EpgInfo> {
             viewHolder = new EpgInfoViewHolder();
             viewHolder.Current = (TextView) view.findViewById(R.id.epg_item_current_epg);
             viewHolder.Time = (TextView) view.findViewById(R.id.epg_item_time);
-            viewHolder.Duration = (TextView) view.findViewById(R.id.epg_item_duration);
             viewHolder.Description = (TextView) view.findViewById(R.id.epg_item_desc);
-            viewHolder.Progress = (ProgressBar) view.findViewById(R.id.epg_item_progress);
             viewHolder.ChannelId = (TextView) view.findViewById(R.id.epg_item_channel_id);
 
             view.setTag(viewHolder);
@@ -71,48 +67,9 @@ public class EpgInfoAdapter extends ArrayAdapter<EpgInfo> {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String time = getItem(position).Time + "-" + getItem(position).EndTime;
+        String time = getItem(position).Date + " " + getItem(position).Time;
         viewHolder.Time.setText(time);
-        viewHolder.Duration.setText(getItem(position).Duration);
         viewHolder.ChannelId.setText(getItem(position).ChannelId);
-
-        if (position == 0) viewHolder.Progress.setVisibility(View.VISIBLE);
-
-        /**
-         * Duration Progress
-         */
-        if (!Host.Name.equals("localhost")) {
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-            String curTime = format.format(new Date());
-
-            String startTime = getItem(position).Time;
-            String duration = getItem(position).Duration;
-
-            Date curDate;
-            Date startDate;
-            Date durDate = new Date();
-            long diff = 0;
-
-            if (!startTime.equals("")) {
-                try {
-                    curDate = format.parse(curTime);
-                    startDate = format.parse(startTime);
-                    durDate = format.parse(duration);
-
-                    diff = curDate.getTime() - startDate.getTime();
-                } catch (ParseException ex) {
-                    ex.printStackTrace();
-                }
-            }
-
-            double elapsed = (diff / 1000 / 60);
-            long durMinutes = (durDate.getHours() * 60 + durDate.getMinutes());
-
-            viewHolder.Progress.setProgress(Double.valueOf((elapsed / durMinutes * 100)).intValue());
-        } else {
-            viewHolder.Progress.setProgress(Double.valueOf(new Random().nextInt(100)).intValue());
-        }
-
 
         return view;
     }

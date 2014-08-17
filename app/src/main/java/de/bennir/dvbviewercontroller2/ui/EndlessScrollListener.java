@@ -1,6 +1,7 @@
 package de.bennir.dvbviewercontroller2.ui;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ImageView;
@@ -85,6 +86,10 @@ public abstract class EndlessScrollListener implements AbsListView.OnScrollListe
             onLoadMore(currentPage + 1, totalItemCount);
             loading = true;
         }
+    }
+
+    public void setActionBarBackgroundDrawable(Drawable drawable) {
+        mActionBarBackgroundDrawable = drawable;
     }
 
     // Defines the process for actually loading more data based on page
