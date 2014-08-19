@@ -94,6 +94,7 @@ public class NsdActivity extends ListActivity {
         mNsdManager = (NsdManager) getSystemService(NSD_SERVICE);
 
         getActionBar().setTitle(getString(R.string.select_device));
+        getActionBar().setDisplayHomeAsUpEnabled(false);
 
         initializeNsd();
         discoverServices();
