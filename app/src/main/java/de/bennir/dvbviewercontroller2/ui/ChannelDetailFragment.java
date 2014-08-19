@@ -129,6 +129,7 @@ public class ChannelDetailFragment extends ProgressListFragment {
         mListView.setDividerHeight(0);
         mListView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
         mListView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        mListView.setSelector(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
 
         final View mHeader = getActivity().getLayoutInflater().from(mContext).inflate(R.layout.list_header_epg, mListView, false);
         mImageView = (ImageView) mHeader.findViewById(R.id.header_imageview);
@@ -164,6 +165,8 @@ public class ChannelDetailFragment extends ProgressListFragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(i == 0) return;
+
                 Log.d(TAG, "Title: " + mAdapter.getItem(i-1).Title);
             }
         });
