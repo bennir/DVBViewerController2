@@ -3,18 +3,23 @@ package de.bennir.dvbviewercontroller2.ui;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import com.devspark.progressfragment.ProgressListFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
@@ -54,7 +59,7 @@ public class ChannelGroupFragment extends ProgressListFragment
         if (channelGroups.isEmpty()) {
             obtainData();
         } else {
-            mAdapter = new ArrayAdapter<String>(mContext, R.layout.list_item_simple, channelGroups);
+            mAdapter = new ChannelGroupAdapter(mContext, R.layout.list_item_simple, channelGroups);
             setListAdapter(mAdapter);
 
             setListShown(true);
@@ -132,5 +137,48 @@ public class ChannelGroupFragment extends ProgressListFragment
         super.onPause();
 
         ((ControllerActivity) getActivity()).removeChannelCallback(this);
+    }
+
+    class ChannelGroupAdapter extends ArrayAdapter<String> {
+        private Context mContext;
+        private int mResource;
+        private List<String> mItems;
+
+        public ChannelGroupAdapter(Context context, int resource, List<String> objects) {
+            super(context, resource, objects);
+
+            mContext = context;
+            mResource = resource;
+            mItems = objects;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View v = convertView;
+            ViewHolder holder; // to reference the child views for later actions
+
+            if (v == null) {
+                v = LayoutInflater.from(parent.getContext()).inflate(mResource, parent, false);
+                // cache view fields into the holder
+
+                holder = new ViewHolder();
+                holder.groupName = (TextView) v.findViewById(android.R.id.text1);
+                // associate the holder with the view for later lookup
+                v.setTag(holder);
+            } else {
+                // view already exists, get the holder instance from the view
+                holder = (ViewHolder) v.getTag();
+            }
+
+            Typeface tf = Typeface.createFromAsset(mContext.getAssets(),"fonts/Roboto-Medium.ttf");
+            holder.groupName.setTypeface(tf);
+            holder.groupName.setText(mItems.get(position));
+
+            return v;
+        }
+    }
+
+    static class ViewHolder {
+        TextView groupName;
     }
 }

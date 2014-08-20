@@ -38,7 +38,6 @@ public class NsdAdapter extends ArrayAdapter<NsdServiceInfo> {
             holder = new ViewHolder();
             holder.serviceName = (TextView) v.findViewById(R.id.service_name);
             holder.serviceHost = (TextView) v.findViewById(R.id.service_ip);
-            holder.servicePort = (TextView) v.findViewById(R.id.service_port);
             // associate the holder with the view for later lookup
             v.setTag(holder);
         } else {
@@ -49,8 +48,7 @@ public class NsdAdapter extends ArrayAdapter<NsdServiceInfo> {
         Typeface tf = Typeface.createFromAsset(mContext.getAssets(),"fonts/Roboto-Medium.ttf");
         holder.serviceName.setTypeface(tf);
         holder.serviceName.setText(items.get(position).getServiceName());
-        holder.serviceHost.setText(items.get(position).getHost().getHostAddress());
-        holder.servicePort.setText(String.valueOf(items.get(position).getPort()));
+        holder.serviceHost.setText(items.get(position).getHost().getHostAddress() + ":" + items.get(position).getPort());
 
         return v;
     }
@@ -58,6 +56,5 @@ public class NsdAdapter extends ArrayAdapter<NsdServiceInfo> {
     static class ViewHolder {
         TextView serviceName;
         TextView serviceHost;
-        TextView servicePort;
     }
 }
