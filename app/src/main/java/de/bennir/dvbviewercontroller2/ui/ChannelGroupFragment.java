@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
-import de.bennir.dvbviewercontroller2.adapter.ChannelGroupAdapter;
+import de.bennir.dvbviewercontroller2.adapter.TextViewAdapter;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
 
@@ -54,7 +54,7 @@ public class ChannelGroupFragment extends ProgressListFragment
         if (channelGroups.isEmpty()) {
             obtainData();
         } else {
-            mAdapter = new ChannelGroupAdapter(mContext, R.layout.list_item_simple, channelGroups);
+            mAdapter = new TextViewAdapter(mContext, R.layout.list_item_simple, channelGroups);
             setListAdapter(mAdapter);
 
             setListShown(true);
@@ -95,7 +95,7 @@ public class ChannelGroupFragment extends ProgressListFragment
 
     @Override
     public void onChannelSuccess() {
-        mAdapter = new ChannelGroupAdapter(mContext, R.layout.list_item_simple, channelGroups);
+        mAdapter = new TextViewAdapter(mContext, R.layout.list_item_simple, channelGroups);
         setListAdapter(mAdapter);
 
         setListShown(true);

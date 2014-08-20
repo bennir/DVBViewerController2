@@ -10,16 +10,16 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class ChannelGroupAdapter extends ArrayAdapter<String> {
+public class TextViewAdapter extends ArrayAdapter<String> {
     private Context mContext;
     private int mResource;
     private List<String> mItems;
 
     static class ViewHolder {
-        TextView groupName;
+        TextView text;
     }
 
-    public ChannelGroupAdapter(Context context, int resource, List<String> objects) {
+    public TextViewAdapter(Context context, int resource, List<String> objects) {
         super(context, resource, objects);
 
         mContext = context;
@@ -37,7 +37,7 @@ public class ChannelGroupAdapter extends ArrayAdapter<String> {
             // cache view fields into the holder
 
             holder = new ViewHolder();
-            holder.groupName = (TextView) v;
+            holder.text = (TextView) v;
             // associate the holder with the view for later lookup
             v.setTag(holder);
         } else {
@@ -46,8 +46,8 @@ public class ChannelGroupAdapter extends ArrayAdapter<String> {
         }
 
         Typeface tf = Typeface.createFromAsset(mContext.getAssets(),"fonts/Roboto-Medium.ttf");
-        holder.groupName.setTypeface(tf);
-        holder.groupName.setText(mItems.get(position));
+        holder.text.setTypeface(tf);
+        holder.text.setText(mItems.get(position));
 
         return v;
     }

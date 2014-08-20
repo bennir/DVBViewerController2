@@ -11,7 +11,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -22,6 +21,7 @@ import java.util.Collections;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
+import de.bennir.dvbviewercontroller2.adapter.TextViewAdapter;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
 
@@ -29,7 +29,7 @@ public class ChannelSearchFragment extends ProgressListFragment
         implements ControllerActivity.ChannelSuccessCallback, SearchView.OnQueryTextListener {
     private static final String TAG = ChannelSearchFragment.class.toString();
 
-    private ArrayAdapter<String> mAdapter;
+    private TextViewAdapter mAdapter;
     private Context mContext;
     private ListView mListView;
 
@@ -63,7 +63,7 @@ public class ChannelSearchFragment extends ProgressListFragment
             }
             Collections.sort(mChannelNames, String.CASE_INSENSITIVE_ORDER);
 
-            mAdapter = new ArrayAdapter<String>(mContext, R.layout.list_item_simple, mChannelNames);
+            mAdapter = new TextViewAdapter(mContext, R.layout.list_item_simple, mChannelNames);
             setListAdapter(mAdapter);
 
             setListShown(true);
@@ -94,13 +94,14 @@ public class ChannelSearchFragment extends ProgressListFragment
     public void onChannelSuccess() {
         Log.d(TAG, "onChannelSuccess");
         mChannels = ((ControllerActivity) getActivity()).mChannels;
+        mChannelNames.clear();
 
         for (Channel chan : mChannels) {
             mChannelNames.add(chan.Name);
         }
         Collections.sort(mChannelNames, String.CASE_INSENSITIVE_ORDER);
 
-        mAdapter = new ArrayAdapter<String>(mContext, R.layout.list_item_simple, mChannelNames);
+        mAdapter = new TextViewAdapter(mContext, R.layout.list_item_simple, mChannelNames);
         setListAdapter(mAdapter);
 
         setListShown(true);
