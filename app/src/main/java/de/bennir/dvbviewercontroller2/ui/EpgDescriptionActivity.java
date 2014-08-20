@@ -26,6 +26,8 @@ public class EpgDescriptionActivity extends Activity {
             e.printStackTrace();
         }
 
-        ((TextViewEx) findViewById(android.R.id.text1)).setText(desc, true);
+        TextViewEx text = (TextViewEx) findViewById(android.R.id.text1);
+
+        text.setText(desc, true);
     }
 }
