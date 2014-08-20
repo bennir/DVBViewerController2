@@ -20,6 +20,7 @@ public class Config {
     public static final String GROUP_KEY = "channel_group";
     public static final String CHANNEL_LIST_KEY = "channel_list";
     public static final String CHANNEL_GROUP_LIST_KEY = "channel_group_list";
+    public static final String EPG_KEY = "channel_epg";
 
     // DVB Command Values
     public static int MENU      = 111;
@@ -118,7 +119,7 @@ public class Config {
         entry.Duration = "15";
         entry.ChannelId = "Das Erste HD";
         entry.EndTime = 635438340000000000L;
-        entry.Desc = "Die Nachrichten und das Wetter";
+        entry.Desc = "Die Nachrichten und das Wetter und hier steht ganz viel weiteres Interessantes. Interessant? Naja das ist wohl eine Frage der Definition. Lorem Ipsum bla bla ich hasse Latein, kacksprache ey!";
 
         for(int i = 0; i < 10; i++) {
             epg.add(entry);

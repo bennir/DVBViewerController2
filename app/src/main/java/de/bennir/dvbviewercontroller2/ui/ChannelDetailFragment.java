@@ -168,8 +168,8 @@ public class ChannelDetailFragment extends ProgressListFragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if(i == 0) return;
 
-                Log.d(TAG, "Title: " + mAdapter.getItem(i-1).Title);
-                Intent mIntent = new Intent(getActivity(), ControllerActivity.class);
+                Intent mIntent = new Intent(getActivity(), EpgDescriptionActivity.class);
+                mIntent.putExtra(Config.EPG_KEY, mAdapter.getItem(i-1));
 
                 startActivity(mIntent);
             }

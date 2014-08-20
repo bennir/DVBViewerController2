@@ -2,11 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="64dp"
+    android:layout_margin="32dp"
     tools:context="de.bennir.dvbviewercontroller2.ui.EpgDescriptionActivity">
 
     <TextView
-        android:text="@string/hello_world"
+        android:id="@android:id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
