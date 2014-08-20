@@ -1,6 +1,7 @@
 package de.bennir.dvbviewercontroller2.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +71,9 @@ public class EpgInfoAdapter extends ArrayAdapter<EpgInfo> {
         String time = getItem(position).Date + " " + getItem(position).Time;
         viewHolder.Time.setText(time);
         viewHolder.ChannelId.setText(getItem(position).ChannelId);
+
+        Typeface tf = Typeface.createFromAsset(mContext.getAssets(),"fonts/Roboto-Medium.ttf");
+        viewHolder.Current.setTypeface(tf);
 
         return view;
     }

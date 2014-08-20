@@ -3,6 +3,7 @@ package de.bennir.dvbviewercontroller2.ui;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
@@ -168,6 +169,9 @@ public class ChannelDetailFragment extends ProgressListFragment {
                 if(i == 0) return;
 
                 Log.d(TAG, "Title: " + mAdapter.getItem(i-1).Title);
+                Intent mIntent = new Intent(getActivity(), ControllerActivity.class);
+
+                startActivity(mIntent);
             }
         });
 

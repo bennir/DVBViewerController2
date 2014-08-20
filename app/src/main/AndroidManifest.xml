@@ -15,8 +15,8 @@
         android:theme="@style/BaseAppTheme" >
         <activity
             android:name=".ui.NsdActivity"
-            android:theme="@style/MainTheme"
-            android:noHistory="true" >
+            android:noHistory="true"
+            android:theme="@style/MainTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,12 +31,20 @@
         <activity
             android:name=".ui.ChannelDetailActivity"
             android:label="@string/title_activity_channel_detail"
-            android:theme="@style/MainTheme.Overlay"
-
-            android:parentActivityName=".ui.ControllerActivity" >
+            android:parentActivityName=".ui.ControllerActivity"
+            android:theme="@style/MainTheme.Overlay" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.bennir.dvbviewercontroller2.ui.ControllerActivity" />
+        </activity>
+        <activity
+            android:name=".ui.EpgDescriptionActivity"
+            android:label="@string/title_activity_epg_description"
+            android:parentActivityName=".ui.ChannelDetailActivity"
+            android:theme="@style/FloatingWindow" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.bennir.dvbviewercontroller2.ui.ChannelDetailActivity" />
         </activity>
     </application>
 

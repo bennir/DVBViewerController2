@@ -23,6 +23,7 @@ import java.util.List;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
+import de.bennir.dvbviewercontroller2.adapter.ChannelGroupAdapter;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
 
@@ -139,46 +140,4 @@ public class ChannelGroupFragment extends ProgressListFragment
         ((ControllerActivity) getActivity()).removeChannelCallback(this);
     }
 
-    class ChannelGroupAdapter extends ArrayAdapter<String> {
-        private Context mContext;
-        private int mResource;
-        private List<String> mItems;
-
-        public ChannelGroupAdapter(Context context, int resource, List<String> objects) {
-            super(context, resource, objects);
-
-            mContext = context;
-            mResource = resource;
-            mItems = objects;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View v = convertView;
-            ViewHolder holder; // to reference the child views for later actions
-
-            if (v == null) {
-                v = LayoutInflater.from(parent.getContext()).inflate(mResource, parent, false);
-                // cache view fields into the holder
-
-                holder = new ViewHolder();
-                holder.groupName = (TextView) v.findViewById(android.R.id.text1);
-                // associate the holder with the view for later lookup
-                v.setTag(holder);
-            } else {
-                // view already exists, get the holder instance from the view
-                holder = (ViewHolder) v.getTag();
-            }
-
-            Typeface tf = Typeface.createFromAsset(mContext.getAssets(),"fonts/Roboto-Medium.ttf");
-            holder.groupName.setTypeface(tf);
-            holder.groupName.setText(mItems.get(position));
-
-            return v;
-        }
-    }
-
-    static class ViewHolder {
-        TextView groupName;
-    }
 }
