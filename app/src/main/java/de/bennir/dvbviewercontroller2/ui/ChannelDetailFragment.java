@@ -155,7 +155,6 @@ public class ChannelDetailFragment extends ProgressListFragment {
         mScrollListener = new EndlessScrollListener(mImageView, mActionBarBackgroundDrawable, mHeader) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                // TODO: load more
                 EpgInfo lastitem = epg.get(epg.size() - 1);
 
                 obtainData(lastitem.EndTime);

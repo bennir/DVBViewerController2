@@ -2,10 +2,12 @@ package de.bennir.dvbviewercontroller2.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -30,6 +32,7 @@ public class EpgInfoAdapter extends ArrayAdapter<EpgInfo> {
         TextView Time;
         TextView Description;
         TextView ChannelId;
+        Button AddTimer;
     }
 
     private List<EpgInfo> epg;
@@ -44,7 +47,7 @@ public class EpgInfoAdapter extends ArrayAdapter<EpgInfo> {
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(final int position, View view, ViewGroup parent) {
         EpgInfoViewHolder viewHolder;
 
         if (view == null) {
@@ -56,6 +59,7 @@ public class EpgInfoAdapter extends ArrayAdapter<EpgInfo> {
             viewHolder.Time = (TextView) view.findViewById(R.id.epg_item_time);
             viewHolder.Description = (TextView) view.findViewById(R.id.epg_item_desc);
             viewHolder.ChannelId = (TextView) view.findViewById(R.id.epg_item_channel_id);
+            viewHolder.AddTimer = (Button) view.findViewById(R.id.epg_item_add_timer);
 
             view.setTag(viewHolder);
         } else {
@@ -77,6 +81,13 @@ public class EpgInfoAdapter extends ArrayAdapter<EpgInfo> {
 
         Typeface tf = Typeface.createFromAsset(mContext.getAssets(),"fonts/Roboto-Medium.ttf");
         viewHolder.Current.setTypeface(tf);
+
+        viewHolder.AddTimer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "Add Timer: " + getItem(position).Title);
+            }
+        });
 
         return view;
     }

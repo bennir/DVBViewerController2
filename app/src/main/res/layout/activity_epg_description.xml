@@ -5,9 +5,10 @@
     android:layout_margin="32dp"
     tools:context="de.bennir.dvbviewercontroller2.ui.EpgDescriptionActivity">
 
-    <TextView
+    <de.bennir.dvbviewercontroller2.ui.TextViewEx
         android:id="@android:id/text1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        />
 
 </FrameLayout>

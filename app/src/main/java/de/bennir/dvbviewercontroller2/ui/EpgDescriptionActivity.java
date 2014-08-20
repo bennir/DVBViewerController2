@@ -2,9 +2,9 @@ package de.bennir.dvbviewercontroller2.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
@@ -18,6 +18,14 @@ public class EpgDescriptionActivity extends Activity {
         setContentView(R.layout.activity_epg_description);
 
         EpgInfo info = getIntent().getParcelableExtra(Config.EPG_KEY);
-        ((TextView) findViewById(android.R.id.text1)).setText(info.Desc);
+
+        String desc = "";
+        try {
+            desc = URLDecoder.decode(info.Desc, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        ((TextViewEx) findViewById(android.R.id.text1)).setText(desc, true);
     }
 }

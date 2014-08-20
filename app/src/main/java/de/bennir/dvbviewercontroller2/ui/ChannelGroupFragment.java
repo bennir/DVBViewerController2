@@ -3,23 +3,17 @@ package de.bennir.dvbviewercontroller2.ui;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import com.devspark.progressfragment.ProgressListFragment;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
@@ -101,7 +95,7 @@ public class ChannelGroupFragment extends ProgressListFragment
 
     @Override
     public void onChannelSuccess() {
-        mAdapter = new ArrayAdapter<String>(mContext, R.layout.list_item_simple, channelGroups);
+        mAdapter = new ChannelGroupAdapter(mContext, R.layout.list_item_simple, channelGroups);
         setListAdapter(mAdapter);
 
         setListShown(true);
