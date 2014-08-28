@@ -73,8 +73,6 @@ public class EpgInfoAdapter extends ArrayAdapter<EpgInfo> {
             e.printStackTrace();
         }
 
-        //TODO: kürzen der Description
-
         String time = getItem(position).Date + " " + getItem(position).Time;
         viewHolder.Time.setText(time);
         viewHolder.ChannelId.setText(getItem(position).ChannelId);

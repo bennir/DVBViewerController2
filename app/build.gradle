@@ -32,6 +32,8 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName '1.0'
+        resConfigs "en", "de"
+        resConfigs "nodpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"
         testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
 
