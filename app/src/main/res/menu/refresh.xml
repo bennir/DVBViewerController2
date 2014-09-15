@@ -8,4 +8,9 @@
         android:showAsAction="ifRoom"
         android:title="@string/menu_refresh" />
 
+    <item
+        android:id="@+id/menu_voice_action"
+        android:showAsAction="always"
+        android:title="Chan" />
+
 </menu>
