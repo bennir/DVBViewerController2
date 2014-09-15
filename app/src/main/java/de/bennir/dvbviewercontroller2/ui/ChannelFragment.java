@@ -105,15 +105,15 @@ public class ChannelFragment extends ListFragment
             }
         });
 
-        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                String channelId = String.valueOf(mAdapter.getItem(position).Id);
-                Log.d(TAG, "channelId: " + channelId);
-                setChannel(channelId);
-                return true;
-            }
-        });
+//        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//                String channelId = String.valueOf(mAdapter.getItem(position).Id);
+//                Log.d(TAG, "channelId: " + channelId);
+//                setChannel(channelId);
+//                return true;
+//            }
+//        });
     }
 
     void setChannel(String channelId) {

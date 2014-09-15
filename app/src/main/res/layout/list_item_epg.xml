@@ -15,8 +15,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         card_view:cardCornerRadius="2dp"
+        android:elevation="10dp"
         android:foreground="?android:attr/selectableItemBackground"
-        android:descendantFocusability="blocksDescendants">
+        android:descendantFocusability="blocksDescendants"
+        android:clipToPadding="false">
 
 
         <LinearLayout
@@ -66,7 +68,7 @@
                 android:id="@+id/epg_item_add_timer"
                 style="?android:attr/borderlessButtonStyle"
                 android:background="?android:attr/selectableItemBackground"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="32dp"
                 android:gravity="start|center_vertical"
                 android:paddingLeft="8dp"

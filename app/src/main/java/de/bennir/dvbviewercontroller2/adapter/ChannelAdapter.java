@@ -1,10 +1,13 @@
 package de.bennir.dvbviewercontroller2.adapter;
 
 import android.content.Context;
+import android.os.Vibrator;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,6 +25,11 @@ import java.util.Random;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
+import de.bennir.dvbviewercontroller2.service.ChannelService;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class ChannelAdapter extends ArrayAdapter<Channel> {
     private static final String TAG = ChannelAdapter.class.toString();
@@ -32,21 +40,30 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
         TextView favid;
         ProgressBar progress;
         ImageView logo;
+        Button switchChannel;
     }
 
     private List<Channel> channels;
     private Context mContext;
     private DVBHost Host;
+    private ChannelService channelService;
+    private RestAdapter restAdapter;
 
     public ChannelAdapter(Context context, List<Channel> channels, DVBHost Host) {
         super(context, R.layout.list_item_channel, channels);
         this.channels = channels;
         this.mContext = context;
         this.Host = Host;
+
+        restAdapter = new RestAdapter.Builder()
+                .setEndpoint("http://" + Host.Ip + ":" + Host.Port + "/dvb")
+                .build();
+
+        channelService = restAdapter.create(ChannelService.class);
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(final int position, View view, ViewGroup parent) {
         ChannelViewHolder viewHolder;
 
         if (view == null) {
@@ -59,6 +76,7 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
             viewHolder.favid = (TextView) view.findViewById(R.id.channel_item_favid);
             viewHolder.progress = (ProgressBar) view.findViewById(R.id.channel_item_progress);
             viewHolder.logo = (ImageView) view.findViewById(R.id.channel_item_logo);
+            viewHolder.switchChannel = (Button) view.findViewById(R.id.channel_item_switch_channel);
 
             view.setTag(viewHolder);
         } else {
@@ -71,6 +89,30 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
             viewHolder.epg.setText(channels.get(position).Epg.Time + " - " + channels.get(position).Epg.Title);
         }
         viewHolder.favid.setText(String.valueOf(channels.get(position).Id));
+
+        viewHolder.switchChannel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
+
+                if (!Host.Name.equals("localhost")) {
+                    String channelId = String.valueOf(getItem(position).Id);
+                    Channel channel = new Channel();
+                    channel.ChannelId = channelId;
+
+                    channelService.setChannel(channel, new Callback<Channel>() {
+                        @Override
+                        public void success(Channel dvbCommand, Response response) {
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            Log.e(TAG, error.toString());
+                        }
+                    });
+                }
+            }
+        });
 
         /**
          * Duration Progress

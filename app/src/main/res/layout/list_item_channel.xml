@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:elevation="10dp"
+    android:descendantFocusability="blocksDescendants"
     android:foreground="?android:attr/selectableItemBackground"
     card_view:cardCornerRadius="2dp">
 
@@ -58,6 +59,28 @@
             android:layout_below="@id/channel_item_current_epg"
             android:layout_toRightOf="@id/channel_item_logo"
             android:progressDrawable="@drawable/progress_light" />
+
+        <View
+            android:id="@+id/separator"
+            android:layout_below="@id/channel_item_progress"
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/theme_default_text_divider"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="6dp"/>
+
+        <Button
+            android:layout_below="@id/separator"
+            android:id="@+id/channel_item_switch_channel"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:gravity="start|center_vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textColor="@color/theme_default_accent"
+            android:text="Switch Channel"/>
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>
