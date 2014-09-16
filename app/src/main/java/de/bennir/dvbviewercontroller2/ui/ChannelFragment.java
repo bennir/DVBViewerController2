@@ -42,9 +42,6 @@ public class ChannelFragment extends ListFragment
     private ChannelAdapter mAdapter;
     private DVBHost Host;
 
-    private ChannelService channelService;
-    private RestAdapter restAdapter;
-
     private List<Channel> channels = new ArrayList<Channel>();
 
     @Override
@@ -65,12 +62,6 @@ public class ChannelFragment extends ListFragment
         currentGroup = getArguments().getString(Config.GROUP_KEY);
         Host = getArguments().getParcelable(Config.DVBHOST_KEY);
 
-        restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://" + Host.Ip + ":" + Host.Port + "/dvb")
-                .build();
-
-        channelService = restAdapter.create(ChannelService.class);
-
         mListView = getListView();
 
         ControllerActivity act = (ControllerActivity) getActivity();
@@ -81,7 +72,7 @@ public class ChannelFragment extends ListFragment
 
         channels = ((ControllerActivity) getActivity()).channelMap.get(currentGroup);
 
-        mAdapter = new ChannelAdapter(mContext, channels, Host);
+        mAdapter = new ChannelAdapter(mContext, channels, Host, getActivity());
         mListView.setAdapter(mAdapter);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -104,36 +95,6 @@ public class ChannelFragment extends ListFragment
                 startActivityForResult(mIntent, 1, bundle);
             }
         });
-
-//        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//                String channelId = String.valueOf(mAdapter.getItem(position).Id);
-//                Log.d(TAG, "channelId: " + channelId);
-//                setChannel(channelId);
-//                return true;
-//            }
-//        });
-    }
-
-    void setChannel(String channelId) {
-        ((Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
-
-        if (!Host.Name.equals("localhost")) {
-            Channel channel = new Channel();
-            channel.ChannelId = channelId;
-
-            channelService.setChannel(channel, new Callback<Channel>() {
-                @Override
-                public void success(Channel dvbCommand, Response response) {
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    Log.e(TAG, error.toString());
-                }
-            });
-        }
     }
 
     private void obtainData() {
@@ -160,7 +121,7 @@ public class ChannelFragment extends ListFragment
     public void onChannelSuccess() {
         channels = ((ControllerActivity) getActivity()).channelMap.get(currentGroup);
 
-        mAdapter = new ChannelAdapter(mContext, channels, Host);
+        mAdapter = new ChannelAdapter(mContext, channels, Host, getActivity());
         mListView.setAdapter(mAdapter);
     }
 

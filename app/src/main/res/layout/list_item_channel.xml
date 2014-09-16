@@ -69,18 +69,39 @@
             android:layout_marginTop="12dp"
             android:layout_marginBottom="6dp"/>
 
-        <Button
+        <LinearLayout
             android:layout_below="@id/separator"
-            android:id="@+id/channel_item_switch_channel"
-            style="?android:attr/borderlessButtonStyle"
-            android:background="?android:attr/selectableItemBackground"
             android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:gravity="start|center_vertical"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:textColor="@color/theme_default_accent"
-            android:text="Switch Channel"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/channel_item_switch_channel"
+                style="?android:attr/borderlessButtonStyle"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="32dp"
+                android:gravity="start|center_vertical"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textColor="@color/theme_default_accent"
+                android:text="Switch Channel"/>
+
+            <Button
+                android:id="@+id/channel_item_watch_stream"
+                style="?android:attr/borderlessButtonStyle"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="32dp"
+                android:gravity="start|center_vertical"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textColor="@color/theme_default_accent"
+                android:text="Watch Stream"/>
+
+            </LinearLayout>
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

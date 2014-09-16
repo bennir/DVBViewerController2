@@ -8,6 +8,7 @@
         android:showAsAction="ifRoom"
         android:title="@string/menu_refresh" />
 
+    <!-- TODO: icon, file name, make available in ChannelFragment -->
     <item
         android:id="@+id/menu_voice_action"
         android:showAsAction="always"

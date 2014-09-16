@@ -1,6 +1,8 @@
 package de.bennir.dvbviewercontroller2.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,10 +24,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
 import de.bennir.dvbviewercontroller2.service.ChannelService;
+import de.bennir.dvbviewercontroller2.ui.StreamActivity;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -41,6 +45,7 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
         ProgressBar progress;
         ImageView logo;
         Button switchChannel;
+        Button stream;
     }
 
     private List<Channel> channels;
@@ -48,12 +53,14 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
     private DVBHost Host;
     private ChannelService channelService;
     private RestAdapter restAdapter;
+    private Activity mActivity;
 
-    public ChannelAdapter(Context context, List<Channel> channels, DVBHost Host) {
+    public ChannelAdapter(Context context, List<Channel> channels, DVBHost host, Activity activity) {
         super(context, R.layout.list_item_channel, channels);
         this.channels = channels;
         this.mContext = context;
-        this.Host = Host;
+        this.Host = host;
+        this.mActivity = activity;
 
         restAdapter = new RestAdapter.Builder()
                 .setEndpoint("http://" + Host.Ip + ":" + Host.Port + "/dvb")
@@ -77,6 +84,7 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
             viewHolder.progress = (ProgressBar) view.findViewById(R.id.channel_item_progress);
             viewHolder.logo = (ImageView) view.findViewById(R.id.channel_item_logo);
             viewHolder.switchChannel = (Button) view.findViewById(R.id.channel_item_switch_channel);
+            viewHolder.stream = (Button) view.findViewById(R.id.channel_item_watch_stream);
 
             view.setTag(viewHolder);
         } else {
@@ -111,6 +119,19 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
                         }
                     });
                 }
+            }
+        });
+
+        viewHolder.stream.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Channel chan = getItem(position);
+
+                Intent mIntent = new Intent(mActivity, StreamActivity.class);
+                mIntent.putExtra(Config.CHANNEL_KEY, channels.get(position));
+                mIntent.putExtra(Config.DVBHOST_KEY, Host);
+
+                mActivity.startActivityForResult(mIntent, 2);
             }
         });
 

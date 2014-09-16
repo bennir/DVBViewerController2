@@ -38,6 +38,15 @@
                 android:value="de.bennir.dvbviewercontroller2.ui.ControllerActivity" />
         </activity>
         <activity
+            android:name=".ui.StreamActivity"
+            android:label="Stream"
+            android:parentActivityName=".ui.ControllerActivity"
+            android:theme="@style/MainTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.bennir.dvbviewercontroller2.ui.ControllerActivity" />
+        </activity>
+        <activity
             android:name=".ui.EpgDescriptionActivity"
             android:label="@string/title_activity_epg_description"
             android:parentActivityName=".ui.ChannelDetailActivity"

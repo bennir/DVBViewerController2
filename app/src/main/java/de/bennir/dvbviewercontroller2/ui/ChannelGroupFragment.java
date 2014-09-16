@@ -6,6 +6,7 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.Menu;
@@ -24,6 +25,11 @@ import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.adapter.TextViewAdapter;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
+import de.bennir.dvbviewercontroller2.service.ChannelService;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class ChannelGroupFragment extends ProgressListFragment
         implements ControllerActivity.ChannelSuccessCallback {
@@ -35,6 +41,9 @@ public class ChannelGroupFragment extends ProgressListFragment
     private ArrayList<Channel> mChannels = new ArrayList<Channel>();
     private ArrayList<String> channelGroups = new ArrayList<String>();
     private DVBHost Host;
+
+    private ChannelService channelService;
+    private RestAdapter restAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,6 +58,12 @@ public class ChannelGroupFragment extends ProgressListFragment
         mContext = getActivity().getApplicationContext();
 
         Host = getArguments().getParcelable(Config.DVBHOST_KEY);
+
+        restAdapter = new RestAdapter.Builder()
+                .setEndpoint("http://" + Host.Ip + ":" + Host.Port + "/dvb")
+                .build();
+
+        channelService = restAdapter.create(ChannelService.class);
 
         mChannels = getArguments().getParcelableArrayList(Config.CHANNEL_LIST_KEY);
         channelGroups = getArguments().getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
@@ -138,25 +153,42 @@ public class ChannelGroupFragment extends ProgressListFragment
 
         if(requestCode == 1) {
             ArrayList<String> words = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            Channel found = null;
+            Channel result = null;
             for(String word : words) {
-                Log.d(TAG, "Search: " + word);
-                found = findChannelByName(word, mChannels);
+                Channel found = findChannelByName(word, ((ControllerActivity) getActivity()).mChannels);
+                if(found != null) {
+                    result = found;
+                    continue;
+                }
             }
 
-            if(found != null) {
-                Log.d(TAG, "Chan: " + found.toString());
+            if(result != null) {
+                Log.d(TAG, "Switching to: " + result.Name);
+
+                ((Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
+
+                if (!Host.Name.equals("localhost")) {
+
+                    channelService.setChannel(result, new Callback<Channel>() {
+                        @Override
+                        public void success(Channel dvbCommand, Response response) {
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            Log.e(TAG, error.toString());
+                        }
+                    });
+                }
             }
         }
     }
 
     private Channel findChannelByName(String search, ArrayList<Channel> channels) {
-        Log.d(TAG, "findChannelByName() " + channels.size());
         Channel result = null;
 
         for(Channel chan : channels) {
             String chanName = chan.Name.toLowerCase();
-            Log.d(TAG, "findChannelByName: " + chanName + " == " + search + " ?");
             if(chanName.indexOf(search.toLowerCase()) != -1) {
                 result = chan;
                 continue;
