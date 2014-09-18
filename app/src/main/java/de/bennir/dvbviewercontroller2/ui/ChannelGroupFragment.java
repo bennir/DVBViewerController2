@@ -2,7 +2,6 @@ package de.bennir.dvbviewercontroller2.ui;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -52,21 +51,38 @@ public class ChannelGroupFragment extends ProgressListFragment
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(Config.DVBHOST_KEY, Host);
+        outState.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
+        outState.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            Log.d(TAG, "onActivityCreated restore");
+            Host = savedInstanceState.getParcelable(Config.DVBHOST_KEY);
+            mChannels = savedInstanceState.getParcelableArrayList(Config.CHANNEL_LIST_KEY);
+            channelGroups = savedInstanceState.getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
+        } else {
+            Host = getArguments().getParcelable(Config.DVBHOST_KEY);
+            mChannels = getArguments().getParcelableArrayList(Config.CHANNEL_LIST_KEY);
+            channelGroups = getArguments().getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
+        }
+
         mContext = getActivity().getApplicationContext();
 
-        Host = getArguments().getParcelable(Config.DVBHOST_KEY);
 
         restAdapter = new RestAdapter.Builder()
                 .setEndpoint("http://" + Host.Ip + ":" + Host.Port + "/dvb")
                 .build();
 
         channelService = restAdapter.create(ChannelService.class);
-
-        mChannels = getArguments().getParcelableArrayList(Config.CHANNEL_LIST_KEY);
-        channelGroups = getArguments().getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
 
         ((ControllerActivity) getActivity()).addChannelCallback(this);
 
@@ -87,7 +103,7 @@ public class ChannelGroupFragment extends ProgressListFragment
                 Bundle bundle = new Bundle();
                 bundle.putString(Config.GROUP_KEY, channelGroups.get(i));
                 bundle.putParcelable(Config.DVBHOST_KEY, Host);
-                bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
+                bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, ((ControllerActivity) getActivity()).mChannels);
                 bundle.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
                 fragment.setArguments(bundle);
 
@@ -114,6 +130,7 @@ public class ChannelGroupFragment extends ProgressListFragment
 
     @Override
     public void onChannelSuccess() {
+        Log.d(TAG, "onChannelSuccess");
         mAdapter = new TextViewAdapter(mContext, R.layout.list_item_simple, channelGroups);
         setListAdapter(mAdapter);
 
@@ -151,18 +168,18 @@ public class ChannelGroupFragment extends ProgressListFragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 1) {
+        if (requestCode == 1) {
             ArrayList<String> words = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             Channel result = null;
-            for(String word : words) {
+            for (String word : words) {
                 Channel found = findChannelByName(word, ((ControllerActivity) getActivity()).mChannels);
-                if(found != null) {
+                if (found != null) {
                     result = found;
                     continue;
                 }
             }
 
-            if(result != null) {
+            if (result != null) {
                 Log.d(TAG, "Switching to: " + result.Name);
 
                 ((Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
@@ -187,9 +204,9 @@ public class ChannelGroupFragment extends ProgressListFragment
     private Channel findChannelByName(String search, ArrayList<Channel> channels) {
         Channel result = null;
 
-        for(Channel chan : channels) {
+        for (Channel chan : channels) {
             String chanName = chan.Name.toLowerCase();
-            if(chanName.indexOf(search.toLowerCase()) != -1) {
+            if (chanName.indexOf(search.toLowerCase()) != -1) {
                 result = chan;
                 continue;
             }

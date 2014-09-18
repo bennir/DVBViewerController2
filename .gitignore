@@ -35,3 +35,6 @@ gradlew*
 *.ipr
 *~
 *.swp
+
+# vitamio
+vitamio/

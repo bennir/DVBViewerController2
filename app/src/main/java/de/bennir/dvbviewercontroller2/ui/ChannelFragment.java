@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,18 +18,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.adapter.ChannelAdapter;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
-import de.bennir.dvbviewercontroller2.service.ChannelService;
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 public class ChannelFragment extends ListFragment
         implements ControllerActivity.ChannelSuccessCallback {
@@ -42,7 +35,7 @@ public class ChannelFragment extends ListFragment
     private ChannelAdapter mAdapter;
     private DVBHost Host;
 
-    private List<Channel> channels = new ArrayList<Channel>();
+    private ArrayList<Channel> mChannels = new ArrayList<Channel>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,34 +45,50 @@ public class ChannelFragment extends ListFragment
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(Config.DVBHOST_KEY, Host);
+        outState.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
+        outState.putString(Config.GROUP_KEY, currentGroup);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         setHasOptionsMenu(true);
 
+        if (savedInstanceState != null) {
+            Log.d(TAG, "onActivityCreated restore");
+            Host = savedInstanceState.getParcelable(Config.DVBHOST_KEY);
+            mChannels = savedInstanceState.getParcelableArrayList(Config.CHANNEL_LIST_KEY);
+            currentGroup = savedInstanceState.getString(Config.GROUP_KEY);
+        } else {
+            currentGroup = getArguments().getString(Config.GROUP_KEY);
+            Host = getArguments().getParcelable(Config.DVBHOST_KEY);
+            mChannels = getArguments().getParcelableArrayList(Config.CHANNEL_LIST_KEY);
+        }
+
+        Log.d(TAG, "onActivityCreated " + mChannels.size());
+
         mContext = getActivity().getApplicationContext();
-
-        currentGroup = getArguments().getString(Config.GROUP_KEY);
-        Host = getArguments().getParcelable(Config.DVBHOST_KEY);
-
         mListView = getListView();
 
         ControllerActivity act = (ControllerActivity) getActivity();
         act.mTitle = currentGroup;
-        getActivity().getActionBar().setTitle(currentGroup);
+        act.getActionBar().setTitle(currentGroup);
 
-        ((ControllerActivity) getActivity()).addChannelCallback(this);
+        act.addChannelCallback(this);
 
-        channels = ((ControllerActivity) getActivity()).channelMap.get(currentGroup);
-
-        mAdapter = new ChannelAdapter(mContext, channels, Host, getActivity());
+        mAdapter = new ChannelAdapter(mContext, mChannels, Host, getActivity());
         mListView.setAdapter(mAdapter);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent mIntent = new Intent(getActivity(), ChannelDetailActivity.class);
-                mIntent.putExtra(Config.CHANNEL_KEY, channels.get(position));
+                mIntent.putExtra(Config.CHANNEL_KEY, mChannels.get(position));
                 mIntent.putExtra(Config.DVBHOST_KEY, Host);
 
                 Bundle bundle;
@@ -119,9 +128,9 @@ public class ChannelFragment extends ListFragment
 
     @Override
     public void onChannelSuccess() {
-        channels = ((ControllerActivity) getActivity()).channelMap.get(currentGroup);
+        Log.d(TAG, "onChannelSuccess " + mChannels.size());
 
-        mAdapter = new ChannelAdapter(mContext, channels, Host, getActivity());
+        mAdapter = new ChannelAdapter(mContext, mChannels, Host, getActivity());
         mListView.setAdapter(mAdapter);
     }
 

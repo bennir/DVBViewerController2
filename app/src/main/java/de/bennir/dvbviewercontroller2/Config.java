@@ -12,15 +12,15 @@ public class Config {
     private static final String TAG = Config.class.toString();
 
     // DNS-SD Service Type
-    public static final String SERVICE_TYPE = "_dvbctrl._tcp.";
+    public static final String SERVICE_TYPE             = "_dvbctrl._tcp.";
 
     // Keys
-    public static final String DVBHOST_KEY = "dvb_host";
-    public static final String CHANNEL_KEY = "channel_name";
-    public static final String GROUP_KEY = "channel_group";
-    public static final String CHANNEL_LIST_KEY = "channel_list";
-    public static final String CHANNEL_GROUP_LIST_KEY = "channel_group_list";
-    public static final String EPG_KEY = "channel_epg";
+    public static final String DVBHOST_KEY              = "dvb_host";
+    public static final String CHANNEL_KEY              = "channel_name";
+    public static final String GROUP_KEY                = "channel_group";
+    public static final String CHANNEL_LIST_KEY         = "channel_list";
+    public static final String CHANNEL_GROUP_LIST_KEY   = "channel_group_list";
+    public static final String EPG_KEY                  = "channel_epg";
 
     // DVB Command Values
     public static int MENU      = 111;
@@ -36,6 +36,10 @@ public class Config {
     public static int YELLOW    = 76;
     public static int GREEN     = 75;
     public static int BLUE      = 77;
+
+    // Recording Service Constant Ports
+    public static String REC_SERVICE_LIVE_STREAM_PORT   = "7522";
+    public static String REC_SERVICE_MEDIA_STREAM_PORT  = "8090";
 
     public static Channel getChannelByName(String channelName, ArrayList<Channel> channels) {
         Channel ret;

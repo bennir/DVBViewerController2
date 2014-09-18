@@ -75,6 +75,7 @@ public class ControllerActivity extends Activity {
     private ListView mDrawerListView;
     private FrameLayout mDrawer;
     private FrameLayout mContainer;
+    private Fragment mContent;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
@@ -106,14 +107,67 @@ public class ControllerActivity extends Activity {
     private Handler mHandler;
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
+        outState.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
+        outState.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
+        outState.putParcelable(Config.DVBHOST_KEY, Host);
+
+//        getFragmentManager().putFragment(outState, "mContent", mContent);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        mChannelCallbacks.clear();
+
+        Log.d(TAG, "Restore Instance State");
+        if (mContainer.getTag().equals("three_column") && savedInstanceState.getInt(STATE_SELECTED_POSITION) == 0) {
+            mCurrentSelectedPosition++;
+        }
+
+        mChannels = savedInstanceState.getParcelableArrayList(Config.CHANNEL_LIST_KEY);
+        channelGroups = savedInstanceState.getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
+        Host = savedInstanceState.getParcelable(Config.DVBHOST_KEY);
+        createChannelMap();
+//
+//        Log.d(TAG, "Restore Position " + mCurrentSelectedPosition);
+////        selectItem(mCurrentSelectedPosition);
+//
+//        mContent = getFragmentManager().getFragment(savedInstanceState, "mContent");
+//        getFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.container, mContent)
+//                .commit();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controller);
 
         if (savedInstanceState != null) {
+            Log.d(TAG, "onCreate restore");
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
+
+//            mContent = getFragmentManager().getFragment(savedInstanceState, "mContent");
+
+            mChannels = savedInstanceState.getParcelableArrayList(Config.CHANNEL_LIST_KEY);
+            channelGroups = savedInstanceState.getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
+            Host = savedInstanceState.getParcelable(Config.DVBHOST_KEY);
+            createChannelMap();
+        } else {
+            mTitle = getString(R.string.remote);
+            mContent = new RemoteFragment();
         }
+
+        // Read in the flag indicating whether or not the user has demonstrated awareness of the
+        // drawer. See PREF_USER_LEARNED_DRAWER for details.
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
         Host = getIntent().getParcelableExtra(Config.DVBHOST_KEY);
 
@@ -124,7 +178,9 @@ public class ControllerActivity extends Activity {
         commandService = restAdapter.create(CommandService.class);
         channelService = restAdapter.create(ChannelService.class);
 
-        getChannels();
+        if (mChannels.isEmpty()) {
+            getChannels();
+        }
 
         Log.d(TAG, "Device " + Host.Name + " (" + Host.Ip + ":" + Host.Port + ")");
 
@@ -238,13 +294,15 @@ public class ControllerActivity extends Activity {
             mDrawerListView.setAdapter(adapter);
         }
 
-        // Read in the flag indicating whether or not the user has demonstrated awareness of the
-        // drawer. See PREF_USER_LEARNED_DRAWER for details.
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
-
         // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+//        selectItem(mCurrentSelectedPosition);
+
+        if(savedInstanceState == null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, mContent)
+                    .commit();
+        }
     }
 
     private void selectItem(int position) {
@@ -256,49 +314,47 @@ public class ControllerActivity extends Activity {
             mDrawerLayout.closeDrawer(mDrawer);
         }
 
-        Fragment fragment;
-
         int pos = position;
         Bundle bundle = new Bundle();
 
         switch (pos) {
             case 0:
                 mTitle = getString(R.string.remote);
-                fragment = new RemoteFragment();
+                mContent = new RemoteFragment();
                 break;
             case 1:
                 mTitle = getString(R.string.channels);
-                fragment = new ChannelGroupFragment();
+                mContent = new ChannelGroupFragment();
 
                 bundle.putParcelable(Config.DVBHOST_KEY, Host);
                 bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
                 bundle.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
 
-                fragment.setArguments(bundle);
+                mContent.setArguments(bundle);
                 break;
             case 2:
                 mTitle = getString(R.string.epg);
-                fragment = new ChannelSearchFragment();
+                mContent = new ChannelSearchFragment();
 
                 bundle.putParcelable(Config.DVBHOST_KEY, Host);
                 bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
 
-                fragment.setArguments(bundle);
+                mContent.setArguments(bundle);
                 break;
             case 3:
                 mTitle = getString(R.string.timers);
-                fragment = new RemoteFragment();
+                mContent = new RemoteFragment();
                 break;
             default:
                 mTitle = getString(R.string.remote);
-                fragment = new RemoteFragment();
+                mContent = new RemoteFragment();
                 break;
         }
 
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
+                .replace(R.id.container, mContent)
                 .commit();
     }
 
@@ -397,7 +453,7 @@ public class ControllerActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 1) {
+        if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 Host = data.getParcelableExtra(Config.DVBHOST_KEY);
             }
@@ -477,23 +533,6 @@ public class ControllerActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
-    }
-
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        Log.d(TAG, "Restore Instance State");
-        if (mContainer.getTag().equals("three_column") && savedInstanceState.getInt(STATE_SELECTED_POSITION) == 0) {
-            mCurrentSelectedPosition++;
-            selectItem(mCurrentSelectedPosition);
-        }
-    }
-
     private class MenuAdapter extends ArrayAdapter<DVBMenuItem> {
 
         public MenuAdapter(Context context) {
@@ -514,7 +553,7 @@ public class ControllerActivity extends Activity {
                 TextView title = (TextView) convertView.findViewById(R.id.menu_title);
                 ImageView icon = (ImageView) convertView.findViewById(R.id.menu_icon);
 
-                Typeface tf = Typeface.createFromAsset(getAssets(),"fonts/Roboto-Medium.ttf");
+                Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf");
                 title.setTypeface(tf);
                 title.setText(getItem(position).getTitle());
                 icon.setImageDrawable(getResources().getDrawable(getItem(position).getIcon()));
@@ -527,7 +566,7 @@ public class ControllerActivity extends Activity {
 
     public void addChannelCallback(Fragment fragment) {
         try {
-            if(!mChannelCallbacks.contains((ChannelSuccessCallback) fragment)) {
+            if (!mChannelCallbacks.contains((ChannelSuccessCallback) fragment)) {
                 mChannelCallbacks.add((ChannelSuccessCallback) fragment);
             }
         } catch (ClassCastException e) {

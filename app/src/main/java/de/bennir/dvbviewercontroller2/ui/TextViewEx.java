@@ -69,8 +69,6 @@ public class TextViewEx extends TextView {
 
     @Override
     public void setPadding(int left, int top, int right, int bottom) {
-        // TODO Auto-generated method stub
-
         super.setPadding(left + 10, top, right + 10, bottom);
     }
 
