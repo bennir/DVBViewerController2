@@ -63,7 +63,7 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
         this.mActivity = activity;
 
         restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://" + Host.Ip + ":" + Host.Port + "/dvb")
+                .setEndpoint(Host.getUrl() + "/dvb")
                 .build();
 
         channelService = restAdapter.create(ChannelService.class);
@@ -125,10 +125,8 @@ public class ChannelAdapter extends ArrayAdapter<Channel> {
         viewHolder.stream.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Channel chan = getItem(position);
-
                 Intent mIntent = new Intent(mActivity, StreamActivity.class);
-                mIntent.putExtra(Config.CHANNEL_KEY, channels.get(position));
+                mIntent.putExtra(Config.CHANNEL_KEY, getItem(position));
                 mIntent.putExtra(Config.DVBHOST_KEY, Host);
 
                 mActivity.startActivityForResult(mIntent, 2);

@@ -54,6 +54,8 @@ public class DVBHost
         out.writeString(Port);
     }
 
+    public String getUrl() { return "http://" + Ip + ":" + Port; }
+
     @Override
     public String toString() {
         return Name + " (" + Ip + ":" + Port + ")";

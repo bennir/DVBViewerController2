@@ -1,5 +1,6 @@
 package de.bennir.dvbviewercontroller2.ui;
 
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.ListFragment;
 import android.content.Context;
@@ -18,15 +19,19 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.adapter.ChannelAdapter;
+import de.bennir.dvbviewercontroller2.interfaces.RefreshChannels;
+import de.bennir.dvbviewercontroller2.interfaces.RequestHost;
+import de.bennir.dvbviewercontroller2.interfaces.SetChannelList;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
 
 public class ChannelFragment extends ListFragment
-        implements ControllerActivity.ChannelSuccessCallback {
+        implements ControllerActivity.ChannelSuccessCallback, SetChannelList {
     private static final String TAG = ChannelFragment.class.toString();
 
     private Context mContext;
@@ -35,7 +40,24 @@ public class ChannelFragment extends ListFragment
     private ChannelAdapter mAdapter;
     private DVBHost Host;
 
-    private ArrayList<Channel> mChannels = new ArrayList<Channel>();
+    private List<Channel> mChannels = new ArrayList<Channel>();
+
+    private RefreshChannels mRefreshCallback;
+    private RequestHost mRequestHostCallback;
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mRefreshCallback = (RefreshChannels) activity;
+            mRequestHostCallback = (RequestHost) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement onRefreshChannelListener, onRequestHostListener");
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,8 +71,6 @@ public class ChannelFragment extends ListFragment
         Log.d(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(Config.DVBHOST_KEY, Host);
-        outState.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
         outState.putString(Config.GROUP_KEY, currentGroup);
     }
 
@@ -61,16 +81,12 @@ public class ChannelFragment extends ListFragment
 
         if (savedInstanceState != null) {
             Log.d(TAG, "onActivityCreated restore");
-            Host = savedInstanceState.getParcelable(Config.DVBHOST_KEY);
-            mChannels = savedInstanceState.getParcelableArrayList(Config.CHANNEL_LIST_KEY);
             currentGroup = savedInstanceState.getString(Config.GROUP_KEY);
         } else {
             currentGroup = getArguments().getString(Config.GROUP_KEY);
-            Host = getArguments().getParcelable(Config.DVBHOST_KEY);
-            mChannels = getArguments().getParcelableArrayList(Config.CHANNEL_LIST_KEY);
         }
 
-        Log.d(TAG, "onActivityCreated " + mChannels.size());
+        Log.d(TAG, "onActivityCreated " + currentGroup);
 
         mContext = getActivity().getApplicationContext();
         mListView = getListView();
@@ -80,6 +96,9 @@ public class ChannelFragment extends ListFragment
         act.getActionBar().setTitle(currentGroup);
 
         act.addChannelCallback(this);
+
+        mRefreshCallback.onRequestChannelListener(this);
+        Host = mRequestHostCallback.onRequestHostListener();
 
         mAdapter = new ChannelAdapter(mContext, mChannels, Host, getActivity());
         mListView.setAdapter(mAdapter);
@@ -146,5 +165,11 @@ public class ChannelFragment extends ListFragment
         super.onPause();
 
         ((ControllerActivity) getActivity()).removeChannelCallback(this);
+    }
+
+    @Override
+    public void onSetChannelListener(ArrayList<Channel> channels) {
+        Log.d(TAG, "onSetChannelListener");
+        mChannels = Channel.createChannelMap(channels).get(currentGroup);
     }
 }

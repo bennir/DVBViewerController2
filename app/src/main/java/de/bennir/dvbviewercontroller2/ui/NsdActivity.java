@@ -7,10 +7,13 @@ import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.transition.Explode;
+import android.transition.Slide;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -70,16 +73,12 @@ public class NsdActivity extends ListActivity {
             case 1:
                 stopDiscovery();
 
-                Intent mIntent = new Intent(getApplicationContext(), ControllerActivity.class);
+                getWindow().setExitTransition( new Slide() );
+                Intent mIntent = new Intent(this, ControllerActivity.class);
                 DVBHost host = new DVBHost("localhost", "127.0.0.1", "8000");
                 mIntent.putExtra(Config.DVBHOST_KEY, host);
-                mIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
                 startActivity(mIntent);
-                finish();
-
-                overridePendingTransition(R.anim.content_right_in, R.anim.content_left_out);
-
                 break;
         }
 
@@ -89,6 +88,7 @@ public class NsdActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_nsd);
 
         mNsdManager = (NsdManager) getSystemService(NSD_SERVICE);
@@ -107,17 +107,14 @@ public class NsdActivity extends ListActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 NsdServiceInfo nsd = mAdapter.getItem(i);
+                stopDiscovery();
 
+                getWindow().setExitTransition( new Slide() );
                 Intent mIntent = new Intent(getApplicationContext(), ControllerActivity.class);
                 DVBHost host = new DVBHost(nsd);
                 mIntent.putExtra(Config.DVBHOST_KEY, host);
 
-                stopDiscovery();
-
                 startActivity(mIntent);
-                finish();
-
-                overridePendingTransition(R.anim.content_right_in, R.anim.content_left_out);
             }
         });
     }

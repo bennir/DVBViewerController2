@@ -23,13 +23,13 @@ configurations {
 }
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 'android-L'
     buildToolsVersion '20.0.0'
 
     defaultConfig {
         applicationId "de.bennir.dvbviewercontroller2"
-        minSdkVersion 16
-        targetSdkVersion 21
+        minSdkVersion 'L'
+        targetSdkVersion 'L'
         versionCode 1
         versionName '1.0'
         resConfigs "en", "de"

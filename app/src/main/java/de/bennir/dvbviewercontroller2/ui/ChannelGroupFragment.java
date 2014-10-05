@@ -1,5 +1,6 @@
 package de.bennir.dvbviewercontroller2.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -18,10 +19,13 @@ import android.widget.ArrayAdapter;
 import com.devspark.progressfragment.ProgressListFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.adapter.TextViewAdapter;
+import de.bennir.dvbviewercontroller2.interfaces.RefreshChannels;
+import de.bennir.dvbviewercontroller2.interfaces.RequestHost;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
 import de.bennir.dvbviewercontroller2.service.ChannelService;
@@ -37,12 +41,28 @@ public class ChannelGroupFragment extends ProgressListFragment
     private ArrayAdapter<String> mAdapter;
     private Context mContext;
 
-    private ArrayList<Channel> mChannels = new ArrayList<Channel>();
     private ArrayList<String> channelGroups = new ArrayList<String>();
     private DVBHost Host;
 
     private ChannelService channelService;
     private RestAdapter restAdapter;
+
+    private RefreshChannels mRefreshCallback;
+    private RequestHost mRequestHostCallback;
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mRefreshCallback = (RefreshChannels) activity;
+            mRequestHostCallback = (RequestHost) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement onRefreshChannelListener, onRequestHostListener");
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,35 +71,14 @@ public class ChannelGroupFragment extends ProgressListFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        Log.d(TAG, "onSaveInstanceState");
-        super.onSaveInstanceState(outState);
-
-        outState.putParcelable(Config.DVBHOST_KEY, Host);
-        outState.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
-        outState.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            Log.d(TAG, "onActivityCreated restore");
-            Host = savedInstanceState.getParcelable(Config.DVBHOST_KEY);
-            mChannels = savedInstanceState.getParcelableArrayList(Config.CHANNEL_LIST_KEY);
-            channelGroups = savedInstanceState.getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
-        } else {
-            Host = getArguments().getParcelable(Config.DVBHOST_KEY);
-            mChannels = getArguments().getParcelableArrayList(Config.CHANNEL_LIST_KEY);
-            channelGroups = getArguments().getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
-        }
-
         mContext = getActivity().getApplicationContext();
-
+        Host = mRequestHostCallback.onRequestHostListener();
 
         restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://" + Host.Ip + ":" + Host.Port + "/dvb")
+                .setEndpoint(Host.getUrl() + "/dvb")
                 .build();
 
         channelService = restAdapter.create(ChannelService.class);
@@ -102,9 +101,6 @@ public class ChannelGroupFragment extends ProgressListFragment
 
                 Bundle bundle = new Bundle();
                 bundle.putString(Config.GROUP_KEY, channelGroups.get(i));
-                bundle.putParcelable(Config.DVBHOST_KEY, Host);
-                bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, ((ControllerActivity) getActivity()).mChannels);
-                bundle.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
                 fragment.setArguments(bundle);
 
                 FragmentManager fragmentManager = getFragmentManager();
@@ -122,10 +118,16 @@ public class ChannelGroupFragment extends ProgressListFragment
     }
 
     private void obtainData() {
+        Log.d(TAG, "obtainData");
         setListShown(false);
         channelGroups.clear();
 
-        ((ControllerActivity) getActivity()).getChannels();
+        mRefreshCallback.onRefreshChannelListener();
+    }
+
+    public void setChannelGroups(ArrayList<String> groups) {
+        Log.d(TAG, "setChannelGroups");
+        channelGroups = groups;
     }
 
     @Override

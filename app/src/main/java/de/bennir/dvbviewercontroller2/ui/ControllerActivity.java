@@ -15,6 +15,8 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.transition.Explode;
+import android.transition.Slide;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -23,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
@@ -31,11 +34,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
+import de.bennir.dvbviewercontroller2.interfaces.RefreshChannels;
+import de.bennir.dvbviewercontroller2.interfaces.RequestHost;
+import de.bennir.dvbviewercontroller2.interfaces.SetChannelList;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBCommand;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
@@ -47,7 +52,8 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class ControllerActivity extends Activity {
+public class ControllerActivity extends Activity
+        implements RefreshChannels, RequestHost {
     private static final String TAG = ControllerActivity.class.toString();
 
     /**
@@ -81,27 +87,23 @@ public class ControllerActivity extends Activity {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    public HashMap<String, List<Channel>> channelMap = new HashMap<String, List<Channel>>();
     public ArrayList<Channel> mChannels = new ArrayList<Channel>();
-    public ArrayList<String> channelGroups = new ArrayList<String>();
     private DVBHost Host;
 
     private ChannelService channelService;
     private CommandService commandService;
 
+    private boolean mIsRefreshing = false;
     private List<ChannelSuccessCallback> mChannelCallbacks = new ArrayList<ChannelSuccessCallback>();
     private Runnable mDemoChannelRunnable = new Runnable() {
         @Override
         public void run() {
             Log.d(TAG, "CreateDemoChannels");
             mChannels = Config.createDemoChannels();
-            createChannelMap();
 
-            for (ChannelSuccessCallback cb : mChannelCallbacks) {
-                if (cb != null) {
-                    cb.onChannelSuccess();
-                }
-            }
+            handleChannelCallback();
+
+            mIsRefreshing = false;
         }
     };
     private Handler mHandler;
@@ -111,7 +113,6 @@ public class ControllerActivity extends Activity {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
         outState.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
-        outState.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
         outState.putParcelable(Config.DVBHOST_KEY, Host);
 
 //        getFragmentManager().putFragment(outState, "mContent", mContent);
@@ -129,9 +130,7 @@ public class ControllerActivity extends Activity {
         }
 
         mChannels = savedInstanceState.getParcelableArrayList(Config.CHANNEL_LIST_KEY);
-        channelGroups = savedInstanceState.getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
         Host = savedInstanceState.getParcelable(Config.DVBHOST_KEY);
-        createChannelMap();
 //
 //        Log.d(TAG, "Restore Position " + mCurrentSelectedPosition);
 ////        selectItem(mCurrentSelectedPosition);
@@ -146,6 +145,11 @@ public class ControllerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        getWindow().setEnterTransition( new Slide() );
+        getWindow().setExitTransition( new Slide() );
+
         setContentView(R.layout.activity_controller);
 
         if (savedInstanceState != null) {
@@ -156,9 +160,7 @@ public class ControllerActivity extends Activity {
 //            mContent = getFragmentManager().getFragment(savedInstanceState, "mContent");
 
             mChannels = savedInstanceState.getParcelableArrayList(Config.CHANNEL_LIST_KEY);
-            channelGroups = savedInstanceState.getStringArrayList(Config.CHANNEL_GROUP_LIST_KEY);
             Host = savedInstanceState.getParcelable(Config.DVBHOST_KEY);
-            createChannelMap();
         } else {
             mTitle = getString(R.string.remote);
             mContent = new RemoteFragment();
@@ -172,7 +174,7 @@ public class ControllerActivity extends Activity {
         Host = getIntent().getParcelableExtra(Config.DVBHOST_KEY);
 
         RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://" + Host.Ip + ":" + Host.Port + "/dvb")
+                .setEndpoint(Host.getUrl() + "/dvb")
                 .build();
 
         commandService = restAdapter.create(CommandService.class);
@@ -182,7 +184,7 @@ public class ControllerActivity extends Activity {
             getChannels();
         }
 
-        Log.d(TAG, "Device " + Host.Name + " (" + Host.Ip + ":" + Host.Port + ")");
+        Log.d(TAG, "Device " + Host.toString());
 
         mContainer = (FrameLayout) findViewById(R.id.container);
 
@@ -297,12 +299,18 @@ public class ControllerActivity extends Activity {
         // Select either the default item (0) or the last selected item.
 //        selectItem(mCurrentSelectedPosition);
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container, mContent)
                     .commit();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAfterTransition();
     }
 
     private void selectItem(int position) {
@@ -316,21 +324,24 @@ public class ControllerActivity extends Activity {
 
         int pos = position;
         Bundle bundle = new Bundle();
+        String mFragmentTag = "";
 
         switch (pos) {
             case 0:
                 mTitle = getString(R.string.remote);
                 mContent = new RemoteFragment();
+                mFragmentTag = "fragment_remote";
                 break;
             case 1:
                 mTitle = getString(R.string.channels);
                 mContent = new ChannelGroupFragment();
 
                 bundle.putParcelable(Config.DVBHOST_KEY, Host);
-                bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
-                bundle.putStringArrayList(Config.CHANNEL_GROUP_LIST_KEY, channelGroups);
-
                 mContent.setArguments(bundle);
+                if (!mChannels.isEmpty()) {
+                    ((ChannelGroupFragment) mContent).setChannelGroups(Channel.createChannelGroups(mChannels));
+                }
+                mFragmentTag = "fragment_channelgroup";
                 break;
             case 2:
                 mTitle = getString(R.string.epg);
@@ -340,28 +351,32 @@ public class ControllerActivity extends Activity {
                 bundle.putParcelableArrayList(Config.CHANNEL_LIST_KEY, mChannels);
 
                 mContent.setArguments(bundle);
+                mFragmentTag = "fragment_channelsearch";
                 break;
             case 3:
                 mTitle = getString(R.string.timers);
                 mContent = new RemoteFragment();
+                mFragmentTag = "fragment_remote";
                 break;
             default:
                 mTitle = getString(R.string.remote);
                 mContent = new RemoteFragment();
+                mFragmentTag = "fragment_remote";
                 break;
         }
 
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, mContent)
+                .replace(R.id.container, mContent, mFragmentTag)
                 .commit();
     }
 
     public void getChannels() {
         Log.d(TAG, "getChannels()");
 
-        channelGroups.clear();
+        mIsRefreshing = true;
+
         mChannels.clear();
 
         if (!Host.Name.equals("localhost")) {
@@ -369,13 +384,10 @@ public class ControllerActivity extends Activity {
                 @Override
                 public void success(ArrayList<Channel> channels, Response response) {
                     mChannels = channels;
-                    createChannelMap();
 
-                    for (ChannelSuccessCallback cb : mChannelCallbacks) {
-                        if (cb != null) {
-                            cb.onChannelSuccess();
-                        }
-                    }
+                    handleChannelCallback();
+
+                    mIsRefreshing = false;
                 }
 
                 @Override
@@ -389,33 +401,17 @@ public class ControllerActivity extends Activity {
         }
     }
 
-    private void createChannelMap() {
-        String currentGroup = "";
-        List<Channel> channelGroup = new ArrayList<Channel>();
+    private void handleChannelCallback() {
+        ChannelGroupFragment channelGroupFrag = (ChannelGroupFragment) getFragmentManager().findFragmentByTag("fragment_channelgroup");
+        if (channelGroupFrag != null) {
+            channelGroupFrag.setChannelGroups(Channel.createChannelGroups(mChannels));
+        }
 
-        for (Channel chan : mChannels) {
-            // Channel Group Names
-            if (!channelGroups.contains(chan.Group)) {
-                channelGroups.add(chan.Group);
-            }
-
-            // Channel Map Group->List<Channel>
-            if (chan.Group.equals(currentGroup)) {
-                channelGroup.add(chan);
-            } else {
-                if (currentGroup.equals("")) {
-                    currentGroup = chan.Group;
-                    channelGroup.add(chan);
-                } else {
-                    channelMap.put(currentGroup, channelGroup);
-                    channelGroup = new ArrayList<Channel>();
-
-                    currentGroup = chan.Group;
-                    channelGroup.add(chan);
-                }
+        for (ChannelSuccessCallback cb : mChannelCallbacks) {
+            if (cb != null) {
+                cb.onChannelSuccess();
             }
         }
-        channelMap.put(currentGroup, channelGroup);
     }
 
     public void sendCommand(DVBCommand cmd) {
@@ -533,6 +529,34 @@ public class ControllerActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onRefreshChannelListener() {
+        if (!mIsRefreshing) {
+            // Deliver Current Channels first, updated Later
+            if (mChannels != null) {
+                handleChannelCallback();
+            }
+
+            getChannels();
+        }
+    }
+
+    @Override
+    public void onRequestChannelListener(Fragment fragment) {
+        try {
+            SetChannelList callback = (SetChannelList) fragment;
+            callback.onSetChannelListener(mChannels);
+        } catch (ClassCastException e) {
+            throw new ClassCastException(fragment.toString()
+                    + " must implement onRefreshChannelListener, onRequestHostListener");
+        }
+    }
+
+    @Override
+    public DVBHost onRequestHostListener() {
+        return Host;
+    }
+
     private class MenuAdapter extends ArrayAdapter<DVBMenuItem> {
 
         public MenuAdapter(Context context) {
@@ -567,6 +591,7 @@ public class ControllerActivity extends Activity {
     public void addChannelCallback(Fragment fragment) {
         try {
             if (!mChannelCallbacks.contains((ChannelSuccessCallback) fragment)) {
+                Log.d(TAG, "addChannelCallback: " + fragment.getClass().getName());
                 mChannelCallbacks.add((ChannelSuccessCallback) fragment);
             }
         } catch (ClassCastException e) {
@@ -576,6 +601,7 @@ public class ControllerActivity extends Activity {
 
     public void removeChannelCallback(Fragment fragment) {
         try {
+            Log.d(TAG, "removeChannelCallback: " + fragment.getClass().getName());
             mChannelCallbacks.remove((ChannelSuccessCallback) fragment);
         } catch (ClassCastException e) {
             throw new ClassCastException("Fragment must implement ChannelSuccessCallback.");

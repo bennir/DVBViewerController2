@@ -136,7 +136,7 @@ public class ChannelDetailFragment extends ProgressListFragment {
         mImageView = (ImageView) mHeader.findViewById(R.id.header_imageview);
 
         restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://" + Host.Ip + ":" + Host.Port + "/dvb")
+                .setEndpoint(Host.getUrl() + "/dvb")
                 .build();
         epgService = restAdapter.create(EpgService.class);
 
