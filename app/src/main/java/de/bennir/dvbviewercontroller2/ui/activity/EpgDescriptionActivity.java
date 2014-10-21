@@ -1,4 +1,4 @@
-package de.bennir.dvbviewercontroller2.ui;
+package de.bennir.dvbviewercontroller2.ui.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.EpgInfo;
+import de.bennir.dvbviewercontroller2.ui.TextViewEx;
 
 public class EpgDescriptionActivity extends Activity {
 

@@ -8,7 +8,7 @@ import org.junit.After;
 import org.robolectric.Robolectric;
 import org.robolectric.util.ActivityController;
 
-import de.bennir.dvbviewercontroller2.ui.ControllerActivity;
+import de.bennir.dvbviewercontroller2.ui.activity.ControllerActivity;
 
 public class FragmentTestCase<T> {
 

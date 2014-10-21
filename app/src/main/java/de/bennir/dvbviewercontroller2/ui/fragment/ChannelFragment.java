@@ -1,4 +1,4 @@
-package de.bennir.dvbviewercontroller2.ui;
+package de.bennir.dvbviewercontroller2.ui.fragment;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -29,6 +29,8 @@ import de.bennir.dvbviewercontroller2.interfaces.RequestHost;
 import de.bennir.dvbviewercontroller2.interfaces.SetChannelList;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
+import de.bennir.dvbviewercontroller2.ui.activity.ChannelDetailActivity;
+import de.bennir.dvbviewercontroller2.ui.activity.ControllerActivity;
 
 public class ChannelFragment extends ListFragment
         implements ControllerActivity.ChannelSuccessCallback, SetChannelList {
@@ -111,7 +113,7 @@ public class ChannelFragment extends ListFragment
                 mIntent.putExtra(Config.DVBHOST_KEY, Host);
 
                 Bundle bundle;
-                if (Build.VERSION.SDK_INT >= 21) {
+                if (Build.VERSION.SDK_INT >= 20) {
                     ImageView logo = (ImageView) parent.findViewById(R.id.channel_item_logo);
                     parent.setTransitionGroup(false);
 

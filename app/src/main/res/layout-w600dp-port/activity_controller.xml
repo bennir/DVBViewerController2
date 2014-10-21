@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:padding="10dp"
-    tools:context="de.bennir.dvbviewercontroller2.ui.ControllerActivity">
+    tools:context="de.bennir.dvbviewercontroller2.ui.activity.ControllerActivity">
 
     <android.support.v7.widget.CardView
         android:layout_width="@dimen/navigation_drawer_width"

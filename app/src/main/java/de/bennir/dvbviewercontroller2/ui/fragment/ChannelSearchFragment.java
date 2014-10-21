@@ -1,4 +1,4 @@
-package de.bennir.dvbviewercontroller2.ui;
+package de.bennir.dvbviewercontroller2.ui.fragment;
 
 import android.app.SearchManager;
 import android.content.Context;
@@ -24,6 +24,8 @@ import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.adapter.TextViewAdapter;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
+import de.bennir.dvbviewercontroller2.ui.activity.ChannelDetailActivity;
+import de.bennir.dvbviewercontroller2.ui.activity.ControllerActivity;
 
 public class ChannelSearchFragment extends ProgressListFragment
         implements ControllerActivity.ChannelSuccessCallback, SearchView.OnQueryTextListener {

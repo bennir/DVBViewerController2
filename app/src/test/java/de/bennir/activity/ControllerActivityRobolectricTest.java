@@ -9,7 +9,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ActivityController;
 
-import de.bennir.dvbviewercontroller2.ui.ControllerActivity;
+import de.bennir.dvbviewercontroller2.ui.activity.ControllerActivity;
 
 import static org.junit.Assert.assertTrue;
 

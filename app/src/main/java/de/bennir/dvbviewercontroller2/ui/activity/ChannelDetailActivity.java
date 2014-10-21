@@ -1,4 +1,4 @@
-package de.bennir.dvbviewercontroller2.ui;
+package de.bennir.dvbviewercontroller2.ui.activity;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import de.bennir.dvbviewercontroller2.Config;
-import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
+import de.bennir.dvbviewercontroller2.ui.fragment.ChannelDetailFragment;
 
 public class ChannelDetailActivity extends Activity {
     private static final String TAG = ChannelDetailActivity.class.toString();

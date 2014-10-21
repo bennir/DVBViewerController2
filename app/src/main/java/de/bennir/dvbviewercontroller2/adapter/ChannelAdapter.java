@@ -29,7 +29,7 @@ import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
 import de.bennir.dvbviewercontroller2.service.ChannelService;
-import de.bennir.dvbviewercontroller2.ui.StreamActivity;
+import de.bennir.dvbviewercontroller2.ui.activity.StreamActivity;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;

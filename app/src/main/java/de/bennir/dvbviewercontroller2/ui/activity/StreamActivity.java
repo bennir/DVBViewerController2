@@ -1,4 +1,4 @@
-package de.bennir.dvbviewercontroller2.ui;
+package de.bennir.dvbviewercontroller2.ui.activity;
 
 
 import android.app.Activity;

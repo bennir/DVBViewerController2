@@ -1,8 +1,9 @@
-package de.bennir.dvbviewercontroller2.ui;
+package de.bennir.dvbviewercontroller2.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,7 +20,6 @@ import android.widget.ArrayAdapter;
 import com.devspark.progressfragment.ProgressListFragment;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
@@ -29,6 +29,7 @@ import de.bennir.dvbviewercontroller2.interfaces.RequestHost;
 import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
 import de.bennir.dvbviewercontroller2.service.ChannelService;
+import de.bennir.dvbviewercontroller2.ui.activity.ControllerActivity;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -106,10 +107,11 @@ public class ChannelGroupFragment extends ProgressListFragment
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager
                         .beginTransaction()
-                        .setCustomAnimations(
-                                R.animator.card_flip_right_in, R.animator.card_flip_right_out,
-                                R.animator.card_flip_left_in, R.animator.card_flip_left_out
-                        )
+//                        .setCustomAnimations(
+//                                android.R.animator.fade_in, android.R.animator.fade_out,
+//                                android.R.animator.fade_in, android.R.animator.fade_out
+//                        )
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                         .replace(R.id.container, fragment)
                         .addToBackStack(null)
                         .commit();

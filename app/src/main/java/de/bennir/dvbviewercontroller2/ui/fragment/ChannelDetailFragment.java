@@ -1,4 +1,4 @@
-package de.bennir.dvbviewercontroller2.ui;
+package de.bennir.dvbviewercontroller2.ui.fragment;
 
 
 import android.app.ActionBar;
@@ -12,14 +12,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.graphics.Palette;
-import android.support.v7.graphics.PaletteItem;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -40,6 +36,9 @@ import de.bennir.dvbviewercontroller2.model.Channel;
 import de.bennir.dvbviewercontroller2.model.DVBHost;
 import de.bennir.dvbviewercontroller2.model.EpgInfo;
 import de.bennir.dvbviewercontroller2.service.EpgService;
+import de.bennir.dvbviewercontroller2.ui.EndlessScrollListener;
+import de.bennir.dvbviewercontroller2.ui.activity.ChannelDetailActivity;
+import de.bennir.dvbviewercontroller2.ui.activity.EpgDescriptionActivity;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -69,11 +68,11 @@ public class ChannelDetailFragment extends ProgressListFragment {
         public void onSuccess() {
             Palette palette = Palette.generate(drawableToBitmap(mImageView.getDrawable()));
 
-            PaletteItem item = palette.getVibrantColor();
-            if (item == null) item = palette.getDarkVibrantColor();
-            if (item == null) item = palette.getDarkMutedColor();
-            if (item != null) {
-                mActionBarBackgroundDrawable = new ColorDrawable(item.getRgb());
+            Palette.Swatch swatch = palette.getVibrantSwatch();
+            if (swatch == null) swatch = palette.getDarkVibrantSwatch();
+            if (swatch == null) swatch = palette.getDarkMutedSwatch();
+            if (swatch != null) {
+                mActionBarBackgroundDrawable = new ColorDrawable(swatch.getRgb());
                 mActionBarBackgroundDrawable.setAlpha(0);
                 mActionBar.setBackgroundDrawable(mActionBarBackgroundDrawable);
                 mScrollListener.setActionBarBackgroundDrawable(mActionBarBackgroundDrawable);

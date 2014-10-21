@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.bennir.dvbviewercontroller2.ui.ChannelDetailActivity"
+    tools:context="de.bennir.dvbviewercontroller2.ui.activity.ChannelDetailActivity"
     android:background="#00000000">
 
     <ImageView
@@ -10,8 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        android:viewName="header_image" />
+        android:scaleType="centerCrop" />
 
     <View
         android:layout_width="match_parent"

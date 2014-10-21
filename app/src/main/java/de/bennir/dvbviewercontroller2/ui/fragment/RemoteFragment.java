@@ -1,4 +1,4 @@
-package de.bennir.dvbviewercontroller2.ui;
+package de.bennir.dvbviewercontroller2.ui.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import de.bennir.dvbviewercontroller2.Config;
 import de.bennir.dvbviewercontroller2.R;
 import de.bennir.dvbviewercontroller2.model.DVBCommand;
+import de.bennir.dvbviewercontroller2.ui.activity.ControllerActivity;
 
 public class RemoteFragment extends Fragment {
     private static final String TAG = RemoteFragment.class.toString();

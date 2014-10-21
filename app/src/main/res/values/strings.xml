@@ -18,5 +18,6 @@
     <string name="menu_search">Search</string>
     <string name="select_device">Select Device</string>
     <string name="title_activity_epg_description">EpgDescriptionActivity</string>
+    <string name="title_activity_channel">ChannelActivity</string>
 
 </resources>

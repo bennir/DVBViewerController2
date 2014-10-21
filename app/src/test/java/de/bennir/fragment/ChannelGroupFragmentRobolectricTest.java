@@ -10,7 +10,7 @@ import org.robolectric.annotation.Config;
 
 import de.bennir.FragmentTestCase;
 import de.bennir.dvbviewercontroller2.R;
-import de.bennir.dvbviewercontroller2.ui.ChannelGroupFragment;
+import de.bennir.dvbviewercontroller2.ui.fragment.ChannelGroupFragment;
 
 import static org.junit.Assert.assertEquals;
 
